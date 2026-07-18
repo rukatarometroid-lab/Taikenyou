@@ -2,592 +2,799 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>VIP CASINO LOBBY</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium Casino Suite - Royal Court Edition</title>
   <style>
     :root {
-      --gold-mat: linear-gradient(135deg, #fcedc5 0%, #d19e53 25%, #f3d492 50%, #a6742a 80%, #ffd993 100%);
-      --gold: #d19e53;
-      --gold-light: #fcd58c;
-      --bg: radial-gradient(circle at 50% 35%, #1a0505 0%, #050101 70%, #000000 100%);
-      --panel: linear-gradient(135deg, #150707 0%, #0a0202 100%);
+      --bg-dark: #060913;
+      --table-green: radial-gradient(circle at center, #0a4d30 0%, #042918 100%);
+      --table-rim: #1f0f02;
+      --gold: #ffd700;
+      --gold-bright: #fff3a8;
+      --gold-dark: #b59410;
+      --text-light: #f8fafc;
+      --text-dark: #0f172a;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
     body {
-      background-color: #000; color: #f7f3eb; font-family: 'Noto Sans JP', sans-serif;
-      overflow: hidden; height: 100vh; width: 100vw; user-select: none;
+      background-color: var(--bg-dark);
+      font-family: 'Times New Roman', 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text-light);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
     }
 
-    /* ゲーム選択ロビー (起動時直行) */
-    .lobby-wrap {
-      width: 100%; height: 100%; display: flex; flex-direction: column;
-      justify-content: center; align-items: center; padding: 20px; background: var(--bg);
+    .screen {
+      display: none !important; 
+      position: relative;
+      width: 100%;
+      max-width: 980px;
+      min-height: 740px;
+      background: var(--table-green);
+      border: 16px solid var(--table-rim);
+      border-radius: 28px;
+      box-shadow: 0 35px 70px -15px rgba(0,0,0,0.9), inset 0 0 60px rgba(0,0,0,0.8);
+      overflow: hidden;
+      padding: 25px;
     }
-    .lobby-title { font-size: 2rem; font-weight: 900; background: var(--gold-mat); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; text-align: center; letter-spacing: 0.1em; }
-    .lobby-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 900px; }
-    
-    @media (max-width: 768px) {
-      .lobby-cards { grid-template-columns: 1fr; max-width: 300px; }
-      .lobby-card { height: 100px !important; }
-      .lobby-title { font-size: 1.5rem; }
+
+    .screen.active {
+      display: flex !important;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
     }
 
-    .lobby-card {
-      background: var(--panel); border: 2px solid rgba(209, 158, 83, 0.4); border-radius: 6px;
-      height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center;
-      cursor: pointer; transition: all 0.2s; box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+    .cinema-text { font-weight: bold; letter-spacing: 3px; text-transform: uppercase; font-family: 'Georgia', serif; }
+
+    .exit-btn {
+      position: absolute; top: 15px; left: 15px;
+      background: rgba(15, 23, 42, 0.7); color: var(--gold-bright); border: 1px solid var(--gold-dark);
+      padding: 8px 18px; border-radius: 20px; cursor: pointer; z-index: 10; font-size: 0.8rem; font-weight: bold;
     }
-    .lobby-card:hover { border-color: var(--gold-light); transform: translateY(-2px); box-shadow: 0 0 15px rgba(209,158,83,0.4); }
-    .card-icon { font-size: 2.2rem; margin-bottom: 8px; }
-    .card-name { font-size: 1rem; font-weight: 900; color: #fff; letter-spacing: 0.05em; }
+    .exit-btn:hover { background: var(--gold-dark); color: var(--text-dark); }
 
-    /* 共通ゲーム画面構造 */
-    .screen { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: var(--bg); }
-    .exit-btn { position: absolute; top: 15px; left: 15px; background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 6px 14px; font-size: 0.75rem; font-weight: bold; cursor: pointer; z-index: 10; border-radius: 4px; }
-    
-    .game-content { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 60px 15px 15px 15px; gap: 12px; }
-    .hud-bar { display: flex; justify-content: space-between; width: 100%; max-width: 650px; background: rgba(0,0,0,0.7); border: 1px solid rgba(209,158,83,0.3); padding: 10px 20px; border-radius: 4px; font-weight: bold; font-size: 0.9rem; }
-    .gold-val { color: var(--gold-light); }
-    
-    .table-board { background: rgba(15, 4, 4, 0.95); border: 2px solid var(--gold); width: 100%; max-width: 650px; flex: 1; display: flex; flex-direction: column; padding: 15px; border-radius: 6px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); overflow-y: auto; }
-    .status-msg { font-size: 1rem; color: var(--gold-light); text-align: center; font-weight: bold; min-height: 24px; margin-bottom: 12px; }
+    /* ロビー */
+    #lobby-screen { background: linear-gradient(135deg, #0e0b1e 0%, #04050a 100%); border-color: #111827; justify-content: center; }
+    .lobby-title { font-size: 3.5rem; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5), 0 4px 10px rgba(0,0,0,0.9); margin-bottom: 40px; text-align: center; }
+    .menu-buttons { display: flex; flex-direction: column; gap: 20px; width: 320px; }
+    .menu-btn {
+      padding: 20px; font-size: 1.3rem; font-weight: bold; color: var(--text-dark); letter-spacing: 1px;
+      background: linear-gradient(to bottom, var(--gold-bright) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+      border: 1px solid #fff; border-radius: 14px; cursor: pointer;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5), inset 0 2px 4px #fff; transition: all 0.2s;
+    }
+    .menu-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(255,215,0,0.3); }
 
-    /* コントロール・ベッティングエリア */
-    .ctrl-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; border-top: 1px solid rgba(209, 158, 83, 0.2); padding-top: 12px; gap: 10px; width: 100%; }
-    .chip-selector { display: flex; gap: 6px; }
-    .chip-btn { width: 36px; height: 36px; border-radius: 50%; background: #111; border: 2px solid var(--gold); color: var(--gold-light); font-weight: 900; font-size: 0.75rem; cursor: pointer; }
-    .chip-btn.selected { background: var(--gold-mat); color: #000; border-color: #fff; }
-    .action-group { display: flex; gap: 6px; }
-    .btn-action { background: #111; border: 1px solid var(--gold); color: #fff; padding: 8px 14px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 4px; min-width: 70px; }
-    .btn-action:disabled { opacity: 0.3; cursor: not-allowed; }
-    .btn-main { background: linear-gradient(to bottom, #9d1a1a, #5a0505); border-color: #ffd993; }
+    /* 情報バー */
+    .top-info { font-size: 1.2rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px 30px; border-radius: 30px; border: 1px solid var(--gold-dark); display: flex; gap: 35px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .status-msg { font-size: 1.2rem; font-weight: bold; color: var(--gold); text-align: center; min-height: 50px; display: flex; align-items: center; justify-content: center; text-shadow: 0 2px 6px rgba(0,0,0,0.8); padding: 0 10px; width: 100%; }
 
-    /* チップ表示 */
-    .chip-pot { min-height: 20px; display: flex; justify-content: center; align-items: center; margin-top: 4px; }
-    .placed-chip { background: radial-gradient(circle, #ffd993, #a6742a); color: #000; font-size: 0.65rem; font-weight: 900; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    /* チップ */
+    .chip-rack { display: flex; gap: 18px; justify-content: center; margin: 5px 0; }
+    .chip {
+      width: 55px; height: 55px; border-radius: 50%; border: 4px dashed #fff;
+      display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.95rem;
+      cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.5), inset 0 0 8px rgba(0,0,0,0.4); transition: all 0.2s; color: white;
+    }
+    .chip:hover { transform: scale(1.1) rotate(20deg); }
+    .chip.selected { transform: translateY(-8px) scale(1.18); border-style: solid; border-color: var(--gold); box-shadow: 0 12px 20px rgba(255,215,0,0.5); }
+    .chip-10 { background: #1e40af; }
+    .chip-50 { background: #991b1b; }
+    .chip-100 { background: #065f46; }
+    .chip-500 { background: #581c87; }
 
-    /* 1. シックボー拡張スタイル */
-    .dice-container { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; }
-    .dice-visual { width: 36px; height: 36px; background: #fff; color: #000; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
-    .sb-layout { display: flex; flex-direction: column; gap: 8px; }
-    .sb-row { display: grid; gap: 8px; }
-    .sb-cell { background: rgba(255,255,255,0.03); border: 1px solid rgba(209,158,83,0.25); padding: 10px 5px; text-align: center; border-radius: 4px; cursor: pointer; font-size: 0.75rem; transition: background 0.1s; }
-    .sb-cell:hover { background: rgba(209,158,83,0.1); }
-    .sb-cell.win { background: rgba(157,26,26,0.7) !important; border-color: #fff; animation: flash 0.5s infinite alternate; }
-    .cell-title { font-weight: bold; color: #fff; }
-    .cell-rate { color: #8a735d; font-size: 0.65rem; }
+    /* トランプ構造 */
+    .card-slots { display: flex; gap: 15px; justify-content: center; min-height: 145px; margin: 5px 0; }
+    .card {
+      width: 102px; height: 148px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 8px; color: #0f172a;
+      position: relative; transition: all 0.3s; border: 1px solid #cbd5e1;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+    }
+    .card.red { color: #e11d48; }
 
-    /* 2. ブラックジャック用スタイル */
-    .bj-playmat { display: flex; flex-direction: column; gap: 20px; justify-content: center; margin-top: 10px; }
-    .card-slot { display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 10px; width: 100%; }
-    .cards-row { display: flex; gap: 8px; min-height: 85px; justify-content: center; align-items: center; margin-top: 5px; }
-    .casino-card { width: 58px; height: 82px; background: #fff; color: #000; border-radius: 5px; border: 1px solid #aaa; display: flex; flex-direction: column; justify-content: space-between; padding: 5px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative; }
-    .casino-card.red { color: #b31919; }
-    .casino-card.back { background: linear-gradient(135deg, #6e0808, #240202); border: 2px solid var(--gold); color: transparent; }
-    .bj-bet-area { background: rgba(0,0,0,0.4); border: 2px dashed rgba(209,158,83,0.4); border-radius: 6px; padding: 15px; text-align: center; cursor: pointer; margin: 15px 0; }
-    .bj-bet-area:hover { border-color: var(--gold); }
+    /* インデックス（四隅の数字とスート） */
+    .index-container {
+      position: absolute; width: 16px; display: flex; flex-direction: column; align-items: center; font-size: 0.95rem; font-weight: 900; line-height: 1.1;
+    }
+    .index-container.top-left { top: 6px; left: 6px; }
+    .index-container.bottom-right { bottom: 6px; right: 6px; transform: rotate(180deg); }
+    .index-suit { font-size: 0.75rem; margin-top: 1px; }
 
-    /* 3. インディアンポーカー用スタイル */
-    .ip-playmat { display: flex; justify-content: space-around; margin: 20px 0; gap: 15px; }
+    /* 中央のスート・絵札描画エリア */
+    .card-center {
+      position: absolute; top: 14px; left: 16px; right: 16px; bottom: 14px;
+    }
 
-    @keyframes flash { from { opacity: 1; } to { opacity: 0.6; } }
+    /* --- 【新設計】JQK用：伝統的な上下対称（ダブルヘッド）フレームスタイル --- */
+    .court-card-box {
+      width: 100%; height: 100%; border: 1px solid #94a3b8; border-radius: 4px;
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
+      background-color: #fff;
+    }
+    .court-half {
+      width: 100%; height: 50%; position: relative; display: flex; justify-content: center; align-items: center;
+      /* 伝統的なトランプの服の幾何学模様をグラデーションで構築 */
+      background: 
+        linear-gradient(45deg, rgba(30,58,138,0.1) 25%, transparent 25%) 0 0/10px 10px,
+        linear-gradient(-45deg, rgba(185,28,28,0.1) 25%, transparent 25%) 0 0/10px 10px,
+        linear-gradient(45deg, transparent 75%, rgba(234,179,8,0.1) 75%) 0 0/10px 10px;
+    }
+    /* 下半分を180度完全反転して綺麗な対称に */
+    .court-half.bottom {
+      transform: rotate(180deg);
+      border-top: 1px dashed rgba(148,163,184,0.6);
+    }
+    /* 王宮のキャラクターアート */
+    .court-avatar {
+      font-size: 1.8rem; line-height: 1; z-index: 2; position: relative; top: 4px;
+    }
+    /* 背景のスート装飾（絵札の背景にある薄いマーク） */
+    .court-bg-suit {
+      position: absolute; font-size: 1.8rem; opacity: 0.08; font-weight: bold;
+      top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;
+    }
+    /* 横側の飾り枠線 */
+    .court-side-border {
+      position: absolute; top: 0; bottom: 0; width: 4px; background: var(--gold-dark); opacity: 0.4;
+    }
+    .court-side-border.left { left: 2px; }
+    .court-side-border.right { right: 2px; }
+
+    /* エース（A）の超特大センター仕様 */
+    .ace-center {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
+    }
+
+    /* 数札（2〜10）の位置指定用共通スート */
+    .c-suit { position: absolute; font-size: 0.95rem; transform: translate(-50%, -50%); }
+    .c-suit.inv { transform: translate(-50%, -50%) rotate(180deg); }
+
+    /* 裏面 */
+    .card.back { 
+      background: radial-gradient(rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 4px, #7f1d1d 4px, #7f1d1d 5px, rgba(0, 0, 0, 0) 5px),
+                  radial-gradient(rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0) 4px, #7f1d1d 4px, #7f1d1d 5px, rgba(0, 0, 0, 0) 5px), #991b1b;
+      background-size: 12px 12px; background-position: 0 0, 6px 6px;
+      border: 5px solid #fff; box-shadow: 0 8px 16px rgba(0,0,0,0.6); 
+    }
+    .card.back * { display: none !important; }
+
+    /* サイコロ */
+    .dice-container { display: flex; gap: 35px; justify-content: center; margin: 10px 0; min-height: 80px; }
+    .real-dice {
+      width: 65px; height: 65px; 
+      background: radial-gradient(circle at 35% 35%, #ff4d4d 0%, #990000 80%);
+      border-radius: 14px;
+      box-shadow: inset 4px 4px 10px rgba(255,255,255,0.4), inset -4px -4px 10px rgba(0,0,0,0.6), 5px 10px 18px rgba(0,0,0,0.6);
+      position: relative; transition: transform 0.1s ease;
+    }
+    .real-dice.rolling { animation: dice3DRoll 0.2s infinite; }
+    @keyframes dice3DRoll {
+      0% { transform: scale(1) rotate(0deg) translate(0, 0); }
+      25% { transform: scale(1.1) rotate(90deg) translate(-10px, -15px); }
+      50% { transform: scale(0.9) rotate(180deg) translate(15px, 5px); }
+      75% { transform: scale(1.1) rotate(270deg) translate(-5px, 15px); }
+      100% { transform: scale(1) rotate(360deg) translate(0, 0); }
+    }
+    .dice-dot {
+      position: absolute; width: 12px; height: 12px; background: #ffffff; border-radius: 50%;
+      box-shadow: inset 1px 1px 3px rgba(0,0,0,0.7), 0 1px 1px rgba(255,255,255,0.3);
+      transform: translate(-50%, -50%); display: none;
+    }
+    .real-dice.face-1 .dice-dot.center { display: block; width: 18px; height: 18px; background: #ffffff; }
+    .top-left { top: 25%; left: 25%; } .top-right { top: 25%; left: 75%; }
+    .mid-left { top: 50%; left: 25%; } .center { top: 50%; left: 50%; } .mid-right { top: 50%; left: 75%; }
+    .bottom-left { top: 75%; left: 25%; } .bottom-right { top: 75%; left: 75%; }
+    .real-dice.face-2 .top-left, .real-dice.face-2 .bottom-right { display: block; }
+    .real-dice.face-3 .top-left, .real-dice.face-3 .center, .real-dice.face-3 .bottom-right { display: block; }
+    .real-dice.face-4 .top-left, .real-dice.face-4 .top-right, .real-dice.face-4 .bottom-left, .real-dice.face-4 .bottom-right { display: block; }
+    .real-dice.face-5 .top-left, .real-dice.face-5 .top-right, .real-dice.face-5 .center, .real-dice.face-5 .bottom-left, .real-dice.face-5 .bottom-right { display: block; }
+    .real-dice.face-6 .top-left, .real-dice.face-6 .top-right, .real-dice.face-6 .mid-left, .real-dice.face-6 .mid-right, .real-dice.face-6 .bottom-left, .real-dice.face-6 .bottom-right { display: block; }
+
+    /* 操作ボタン */
+    .controls { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 5px; width: 100%; }
+    .btn {
+      padding: 14px 24px; font-weight: bold; font-size: 0.95rem; border-radius: 10px; border: 1px solid #cbd5e1; cursor: pointer;
+      background: #f8fafc; color: var(--text-dark); box-shadow: 0 5px 8px rgba(0,0,0,0.3); transition: all 0.1s;
+    }
+    .btn:active { transform: translateY(3px); box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none !important; box-shadow: none; }
+    .btn-primary { background: linear-gradient(to bottom, var(--gold-bright), var(--gold)); border-color: var(--gold-dark); font-weight: 900; }
+    .btn-danger { background: #ef4444; color: white; border-color: #991b1b; }
+
+    /* シックボー */
+    .sicbo-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; max-height: 340px; overflow-y: auto; padding: 5px;
+      background: rgba(0,0,0,0.3); border-radius: 14px; border: 1px solid var(--gold-dark);
+    }
+    .bet-section-title { grid-column: span 4; font-size: 0.85rem; color: var(--gold); font-weight: bold; margin-top: 8px; border-left: 4px solid var(--gold); padding-left: 8px; text-align: left; text-transform: uppercase;}
+    .bet-tile {
+      background: rgba(15, 23, 42, 0.7); border: 1.5px solid rgba(255,255,215,0.2); border-radius: 10px;
+      padding: 12px 4px; text-align: center; cursor: pointer; position: relative; transition: all 0.2s;
+    }
+    .bet-tile:hover { border-color: var(--gold); background: rgba(255,255,215,0.4); }
+    .tile-name { font-size: 0.9rem; font-weight: bold; color: var(--gold-bright); }
+    .tile-odds { font-size: 0.75rem; color: #94a3b8; margin-top: 3px; }
+    .tile-chips {
+      position: absolute; top: -8px; right: -8px; background: #be123c; color: white;
+      font-size: 0.75rem; font-weight: bold; padding: 3px 8px; border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4); display: none; z-index: 2; border: 1px solid #fff;
+    }
+
+    .area-layout { width: 100%; display: flex; flex-direction: column; justify-content: space-around; flex-grow: 1; }
+    .speech-bubble { background: #fff; color: #0f172a; padding: 10px 16px; border-radius: 14px; margin-top: 8px; font-size: 0.9rem; font-weight: bold; max-width: 240px; box-shadow: 0 6px 12px rgba(0,0,0,0.3); text-align: center; position: relative; }
   </style>
 </head>
 <body>
 
-  <!-- ゲーム選択ロビー (起動時に無演出でここが表示されます) -->
-  <div id="lobby-screen" class="lobby-wrap">
-    <h1 class="lobby-title">VIP CASINO CLUB</h1>
-    <div class="lobby-cards">
-      <div class="lobby-card" onclick="openGame('sicbo-screen')">
-        <div class="card-icon">🎲</div>
-        <div class="card-name">SIC BO (シックボー)</div>
+  <!-- ① ロビー画面 -->
+  <section id="lobby-screen" class="screen active">
+    <div><h1 class="lobby-title cinema-text">PREMIUM CASINO</h1></div>
+    <div class="top-info"><div>WALLET: $<span id="lobby-balance">1000</span></div></div>
+    <div class="menu-buttons">
+      <button class="menu-btn" onclick="switchScreen('bj-screen', initBJ)">BLACKJACK</button>
+      <button class="menu-btn" onclick="switchScreen('indian-screen', initIndian)">INDIAN POKER</button>
+      <button class="menu-btn" onclick="switchScreen('sicbo-screen', initSicbo)">SIC BO (大小)</button>
+    </div>
+    <div></div>
+  </section>
+
+  <!-- ② BLACKJACK -->
+  <section id="bj-screen" class="screen">
+    <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
+    <div class="top-info"><div>WALLET: $<span id="bj-balance">1000</span></div><div class="bet-display">BET: $<span id="bj-bet-total">0</span></div></div>
+    
+    <div class="area-layout">
+      <div style="text-align: center;">
+        <div style="font-weight: bold; margin-bottom: 5px;">DEALER (SCORE: <span id="bj-dealer-score">?</span>)</div>
+        <div id="bj-dealer-cards" class="card-slots"></div>
       </div>
-      <div class="lobby-card" onclick="openGame('bj-screen')">
-        <div class="card-icon">♠</div>
-        <div class="card-name">BLACKJACK (ブラックジャック)</div>
-      </div>
-      <div class="lobby-card" onclick="openGame('ip-screen')">
-        <div class="card-icon">🃏</div>
-        <div class="card-name">INDIAN POKER</div>
+      <div id="bj-status" class="status-msg">チップを選んでベットエリアに賭けてください</div>
+      <div style="text-align: center;">
+        <div id="bj-player-cards" class="card-slots"></div>
+        <div style="font-weight: bold; margin-top: 5px;">PLAYER (SCORE: <span id="bj-player-score">0</span>)</div>
       </div>
     </div>
-  </div>
 
-  <!-- 1. SIC BO Screen -->
-  <div id="sicbo-screen" class="screen">
-    <button class="exit-btn" onclick="backToLobby()">LOBBY</button>
-    <div class="game-content">
-      <div class="hud-bar">
-        <div>CREDIT: <span class="gold-val wallet-lbl">1000</span></div>
-        <div>TOTAL BET: <span id="sb-bet-total">0</span></div>
+    <div class="chip-rack" id="bj-chips">
+      <div class="chip chip-10 selected" onclick="selectChip(10, this)">10</div>
+      <div class="chip chip-50" onclick="selectChip(50, this)">50</div>
+      <div class="chip chip-100" onclick="selectChip(100, this)">100</div>
+      <div class="chip chip-500" onclick="selectChip(500, this)">500</div>
+    </div>
+
+    <div class="controls">
+      <button id="bj-btn-addbet" class="btn btn-primary" onclick="bjAddBet()">ベット追加</button>
+      <button id="bj-btn-deal" class="btn btn-primary" onclick="bjDeal()" disabled>ディール</button>
+      <button id="bj-btn-hit" class="btn" onclick="bjHit()" disabled>ヒット</button>
+      <button id="bj-btn-stay" class="btn" onclick="bjStay()" disabled>ステイ</button>
+      <button id="bj-btn-double" class="btn" onclick="bjDoubleDown()" disabled>ダブルダウン</button>
+      <button id="bj-btn-surrender" class="btn btn-danger" onclick="bjSurrender()" disabled>サレンダー</button>
+      <button id="bj-btn-clear" class="btn" onclick="bjClearBet()">クリア</button>
+    </div>
+  </section>
+
+  <!-- ③ INDIAN POKER -->
+  <section id="indian-screen" class="screen">
+    <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
+    <div class="top-info"><div>WALLET: $<span id="indian-balance">1000</span></div><div class="bet-display">POT: $<span id="indian-pot">0</span></div></div>
+    
+    <div class="area-layout" style="flex-direction: row; justify-content: space-around; align-items: center;">
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <div style="font-weight: bold;">OPPONENT (AI DEALER)</div>
+        <div id="indian-dealer-cards" class="card-slots"></div>
+        <div id="indian-dealer-bubble" class="speech-bubble">じっくり見させてもらうよ…</div>
       </div>
-      <div class="table-board">
-        <div class="dice-container">
-          <div class="dice-visual" id="sb-d1">?</div>
-          <div class="dice-visual" id="sb-d2">?</div>
-          <div class="dice-visual" id="sb-d3">?</div>
-        </div>
-        <div class="status-msg" id="sb-msg">ベットエリアをタップしてチップを配置してください</div>
-        
-        <div class="sb-layout">
-          <!-- 大小エリア -->
-          <div class="sb-row" style="grid-template-columns: 1fr 1fr;">
-            <div class="sb-cell" id="sb-bet-small" onclick="sbPlace('small')">
-              <div class="cell-title">小 (4-10)</div><div class="cell-rate">1 : 1</div>
-              <div class="chip-pot" id="sb-pot-small"></div>
-            </div>
-            <div class="sb-cell" id="sb-bet-big" onclick="sbPlace('big')">
-              <div class="cell-title">大 (11-17)</div><div class="cell-rate">1 : 1</div>
-              <div class="chip-pot" id="sb-pot-big"></div>
-            </div>
-          </div>
-          <!-- エニートリプルエリア -->
-          <div class="sb-row" style="grid-template-columns: 1fr;">
-            <div class="sb-cell" id="sb-bet-anytriple" onclick="sbPlace('anytriple')">
-              <div class="cell-title">エニートリプル (任意のゾロ目)</div><div class="cell-rate">30 : 1</div>
-              <div class="chip-pot" id="sb-pot-anytriple"></div>
-            </div>
-          </div>
-          <!-- トータル数字エリア (4〜17) -->
-          <div class="sb-row" style="grid-template-columns: repeat(7, 1fr); font-size:0.65rem;">
-            <div class="sb-cell" id="sb-bet-t4" onclick="sbPlace('t4')"><div>4</div><div class="chip-pot" id="sb-pot-t4"></div></div>
-            <div class="sb-cell" id="sb-bet-t5" onclick="sbPlace('t5')"><div>5</div><div class="chip-pot" id="sb-pot-t5"></div></div>
-            <div class="sb-cell" id="sb-bet-t6" onclick="sbPlace('t6')"><div>6</div><div class="chip-pot" id="sb-pot-t6"></div></div>
-            <div class="sb-cell" id="sb-bet-t7" onclick="sbPlace('t7')"><div>7</div><div class="chip-pot" id="sb-pot-t7"></div></div>
-            <div class="sb-cell" id="sb-bet-t8" onclick="sbPlace('t8')"><div>8</div><div class="chip-pot" id="sb-pot-t8"></div></div>
-            <div class="sb-cell" id="sb-bet-t9" onclick="sbPlace('t9')"><div>9</div><div class="chip-pot" id="sb-pot-t9"></div></div>
-            <div class="sb-cell" id="sb-bet-t10" onclick="sbPlace('t10')"><div>10</div><div class="chip-pot" id="sb-pot-t10"></div></div>
-          </div>
-          <div class="sb-row" style="grid-template-columns: repeat(7, 1fr); font-size:0.65rem;">
-            <div class="sb-cell" id="sb-bet-t11" onclick="sbPlace('t11')"><div>11</div><div class="chip-pot" id="sb-pot-t11"></div></div>
-            <div class="sb-cell" id="sb-bet-t12" onclick="sbPlace('t12')"><div>12</div><div class="chip-pot" id="sb-pot-t12"></div></div>
-            <div class="sb-cell" id="sb-bet-t13" onclick="sbPlace('t13')"><div>13</div><div class="chip-pot" id="sb-pot-t13"></div></div>
-            <div class="sb-cell" id="sb-bet-t14" onclick="sbPlace('t14')"><div>14</div><div class="chip-pot" id="sb-pot-t14"></div></div>
-            <div class="sb-cell" id="sb-bet-t15" onclick="sbPlace('t15')"><div>15</div><div class="chip-pot" id="sb-pot-t15"></div></div>
-            <div class="sb-cell" id="sb-bet-t16" onclick="sbPlace('t16')"><div>16</div><div class="chip-pot" id="sb-pot-t16"></div></div>
-            <div class="sb-cell" id="sb-bet-t17" onclick="sbPlace('t17')"><div>17</div><div class="chip-pot" id="sb-pot-t17"></div></div>
-          </div>
-        </div>
-
-        <div class="ctrl-row">
-          <div class="chip-selector">
-            <button class="chip-btn selected" onclick="changeChip(10, this)">10</button>
-            <button class="chip-btn" onclick="changeChip(50, this)">50</button>
-            <button class="chip-btn" onclick="changeChip(100, this)">100</button>
-          </div>
-          <div class="action-group">
-            <button class="btn-action" onclick="sbClear()">CLEAR</button>
-            <button class="btn-action btn-main" onclick="sbRoll()">ROLL</button>
-          </div>
-        </div>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <div style="font-weight: bold;">YOUR FOREHEAD</div>
+        <div id="indian-player-cards" class="card-slots"></div>
+        <div class="speech-bubble" style="background:#e2e8f0;">（自分のカードは見えません）</div>
       </div>
     </div>
-  </div>
 
-  <!-- 2. BLACKJACK Screen -->
-  <div id="bj-screen" class="screen">
-    <button class="exit-btn" onclick="backToLobby()">LOBBY</button>
-    <div class="game-content">
-      <div class="hud-bar">
-        <div>CREDIT: <span class="gold-val wallet-lbl">1000</span></div>
-        <div>BET: <span id="bj-bet-lbl">0</span></div>
-      </div>
-      <div class="table-board">
-        <div class="status-msg" id="bj-msg">チップを賭けて DEAL を押してください</div>
-        
-        <div class="bj-playmat">
-          <div class="card-slot">
-            <div class="cell-title">DEALER (<span id="bj-d-score">?</span>)</div>
-            <div class="cards-row" id="bj-dealer-cards"></div>
-          </div>
-          <div class="card-slot">
-            <div class="cell-title">PLAYER (<span id="bj-p-score">0</span>)</div>
-            <div class="cards-row" id="bj-player-cards"></div>
-          </div>
-        </div>
+    <div id="indian-status" class="status-msg">アンティ($50)を支払ってゲームを開幕します</div>
 
-        <div class="bj-bet-area" id="bj-bet-zone" onclick="bjPlace()">
-          <span style="font-size:0.85rem; font-weight:bold; color:var(--gold);">BET FIELD</span>
-          <div class="chip-pot" id="bj-pot"></div>
-        </div>
-
-        <div class="ctrl-row">
-          <div class="chip-selector">
-            <button class="chip-btn selected" onclick="changeChip(10, this)">10</button>
-            <button class="chip-btn" onclick="changeChip(50, this)">50</button>
-            <button class="chip-btn" onclick="changeChip(100, this)">100</button>
-          </div>
-          <div class="action-group">
-            <button class="btn-action" id="btn-bj-hit" onclick="bjHit()" disabled>HIT</button>
-            <button class="btn-action" id="btn-bj-stand" onclick="bjStand()" disabled>STAND</button>
-            <button class="btn-action btn-main" id="btn-bj-deal" onclick="bjDeal()">DEAL</button>
-          </div>
-        </div>
-      </div>
+    <div class="controls">
+      <button id="indian-btn-start" class="btn btn-primary" onclick="indianStart()">ゲーム開始 (アンティ$50)</button>
+      <button id="indian-btn-change" class="btn" onclick="indianPlayerChange()" disabled>自分のカードを交換 (最大2回: 残り<span id="p-change-count">2</span>)</button>
+      <button id="indian-btn-bet" class="btn btn-primary" onclick="indianAction('bet')" disabled>勝負する / ベット (+$50)</button>
+      <button id="indian-btn-fold" class="btn btn-danger" onclick="indianAction('fold')" disabled>フォールド (降参)</button>
     </div>
-  </div>
+  </section>
 
-  <!-- 3. INDIAN POKER Screen -->
-  <div id="ip-screen" class="screen">
-    <button class="exit-btn" onclick="backToLobby()">LOBBY</button>
-    <div class="game-content">
-      <div class="hud-bar">
-        <div>CREDIT: <span class="gold-val wallet-lbl">1000</span></div>
-        <div>POT / BET: <span id="ip-bet-lbl">0</span></div>
-      </div>
-      <div class="table-board">
-        <div class="status-msg" id="ip-msg">BET を押してゲームを開始（アンティ10自動投入）</div>
-        
-        <div class="ip-playmat">
-          <div class="card-slot">
-            <div class="cell-title">相手のカード (見えています)</div>
-            <div class="cards-row" id="ip-opp-cards"></div>
-          </div>
-          <div class="card-slot">
-            <div class="cell-title">あなたのカード (見えません)</div>
-            <div class="cards-row" id="ip-my-cards"></div>
-          </div>
-        </div>
+  <!-- ④ SIC BO -->
+  <section id="sicbo-screen" class="screen">
+    <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
+    <div class="top-info"><div>WALLET: $<span id="sicbo-balance">1000</span></div><div class="bet-display">TOTAL BET: $<span id="sicbo-total-bet">0</span></div></div>
 
-        <div class="ctrl-row">
-          <div class="chip-selector">
-            <button class="chip-btn selected" onclick="changeChip(10, this)">10</button>
-            <button class="chip-btn" onclick="changeChip(50, this)">50</button>
-            <button class="chip-btn" onclick="changeChip(100, this)">100</button>
-          </div>
-          <div class="action-group">
-            <button class="btn-action" id="btn-ip-fold" onclick="ipFold()" disabled>FOLD</button>
-            <button class="btn-action" id="btn-ip-raise" onclick="ipRaise()">BET</button>
-            <button class="btn-action btn-main" id="btn-ip-call" onclick="ipShowdown()" disabled>CALL勝負</button>
-          </div>
-        </div>
-      </div>
+    <div class="dice-container">
+      <div id="sd-1" class="real-dice face-1"><div class="dice-dot top-left"></div><div class="dice-dot top-right"></div><div class="dice-dot mid-left"></div><div class="dice-dot center"></div><div class="dice-dot mid-right"></div><div class="dice-dot bottom-left"></div><div class="dice-dot bottom-right"></div></div>
+      <div id="sd-2" class="real-dice face-1"><div class="dice-dot top-left"></div><div class="dice-dot top-right"></div><div class="dice-dot mid-left"></div><div class="dice-dot center"></div><div class="dice-dot mid-right"></div><div class="dice-dot bottom-left"></div><div class="dice-dot bottom-right"></div></div>
+      <div id="sd-3" class="real-dice face-1"><div class="dice-dot top-left"></div><div class="dice-dot top-right"></div><div class="dice-dot mid-left"></div><div class="dice-dot center"></div><div class="dice-dot mid-right"></div><div class="dice-dot bottom-left"></div><div class="dice-dot bottom-right"></div></div>
     </div>
-  </div>
+
+    <div id="sicbo-status" class="status-msg">チップを選び、好きな場所に複数ベットできます！</div>
+
+    <div class="sicbo-grid">
+      <div class="bet-section-title">基本役</div>
+      <div class="bet-tile" onclick="placeSicboBet('big')"><div class="tile-chips" id="chip-big">0</div><div class="tile-name">大 (Big)</div><div class="tile-odds">1 : 1</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('small')"><div class="tile-chips" id="chip-small">0</div><div class="tile-name">小 (Small)</div><div class="tile-odds">1 : 1</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('anyTriple')"><div class="tile-chips" id="chip-anyTriple">0</div><div class="tile-name">任意のゾロ目</div><div class="tile-odds">1 : 30</div></div>
+      <div style="background:transparent;"></div>
+
+      <div class="bet-section-title">特定のゾロ目</div>
+      <div class="bet-tile" onclick="placeSicboBet('triple1')"><div class="tile-chips" id="chip-triple1">0</div><div class="tile-name">ゾロ目 (1)</div><div class="tile-odds">1 : 180</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('triple2')"><div class="tile-chips" id="chip-triple2">0</div><div class="tile-name">ゾロ目 (2)</div><div class="tile-odds">1 : 180</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('triple3')"><div class="tile-chips" id="chip-triple3">0</div><div class="tile-name">ゾロ目 (3)</div><div class="tile-odds">1 : 180</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('triple4')"><div class="tile-chips" id="chip-triple4">0</div><div class="tile-name">ゾロ目 (4)</div><div class="tile-odds">1 : 180</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('triple5')"><div class="tile-chips" id="chip-triple5">0</div><div class="tile-name">ゾロ目 (5)</div><div class="tile-odds">1 : 180</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('triple6')"><div class="tile-chips" id="chip-triple6">0</div><div class="tile-name">ゾロ目 (6)</div><div class="tile-odds">1 : 180</div></div>
+      <div style="background:transparent; grid-column: span 2;"></div>
+
+      <div class="bet-section-title">合計値</div>
+      <div class="bet-tile" onclick="placeSicboBet('sum4')"><div class="tile-chips" id="chip-sum4">0</div><div class="tile-name">4 or 17</div><div class="tile-odds">1 : 60</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('sum5')"><div class="tile-chips" id="chip-sum5">0</div><div class="tile-name">5 or 16</div><div class="tile-odds">1 : 30</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('sum6')"><div class="tile-chips" id="chip-sum6">0</div><div class="tile-name">6 or 15</div><div class="tile-odds">1 : 18</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('sum7')"><div class="tile-chips" id="chip-sum7">0</div><div class="tile-name">7 or 14</div><div class="tile-odds">1 : 12</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('sum8')"><div class="tile-chips" id="chip-sum8">0</div><div class="tile-name">8 or 13</div><div class="tile-odds">1 : 8</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('sum9')"><div class="tile-chips" id="chip-sum9">0</div><div class="tile-name">9 or 12</div><div class="tile-odds">1 : 7</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('sum10')"><div class="tile-chips" id="chip-sum10">0</div><div class="tile-name">10 or 11</div><div class="tile-odds">1 : 6</div></div>
+      <div style="background:transparent;"></div>
+
+      <div class="bet-section-title">シングル数字</div>
+      <div class="bet-tile" onclick="placeSicboBet('single1')"><div class="tile-chips" id="chip-single1">0</div><div class="tile-name">数 (1)</div><div class="tile-odds">1〜12倍</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('single2')"><div class="tile-chips" id="chip-single2">0</div><div class="tile-name">数 (2)</div><div class="tile-odds">1〜12倍</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('single3')"><div class="tile-chips" id="chip-single3">0</div><div class="tile-name">数 (3)</div><div class="tile-odds">1〜12倍</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('single4')"><div class="tile-chips" id="chip-single4">0</div><div class="tile-name">数 (4)</div><div class="tile-odds">1〜12倍</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('single5')"><div class="tile-chips" id="chip-single5">0</div><div class="tile-name">数 (5)</div><div class="tile-odds">1〜12倍</div></div>
+      <div class="bet-tile" onclick="placeSicboBet('single6')"><div class="tile-chips" id="chip-single6">0</div><div class="tile-name">数 (6)</div><div class="tile-odds">1〜12倍</div></div>
+      <div style="background:transparent; grid-column: span 2;"></div>
+    </div>
+
+    <div class="chip-rack" id="sicbo-chips">
+      <div class="chip chip-10 selected" onclick="selectChip(10, this)">10</div>
+      <div class="chip chip-50" onclick="selectChip(50, this)">50</div>
+      <div class="chip chip-100" onclick="selectChip(100, this)">100</div>
+      <div class="chip chip-500" onclick="selectChip(500, this)">500</div>
+    </div>
+
+    <div class="controls">
+      <button id="sicbo-btn-roll" class="btn btn-primary" onclick="sicboRoll()">ROLL DICE (勝負)</button>
+      <button class="btn" onclick="sicboClearBet()">クリア</button>
+    </div>
+  </section>
 
   <script>
-    // ==========================================================================
-    // コアマネージャー
-    // ==========================================================================
-    let credit = 1000;
-    let currentChip = 10;
-    let activeId = "lobby-screen";
+    let balance = 1000;
+    let currentSelectedChip = 10;
+    const suits = ['♠', '♥', '♦', '♣'];
+    const suitRank = { '♠': 4, '♥': 3, '♦': 2, '♣': 1 };
 
-    function updateWallets() {
-      document.querySelectorAll('.wallet-lbl').forEach(el => el.innerText = credit);
-    }
-    function changeChip(val, btn) {
-      currentChip = val;
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    }
-    function openGame(id) {
-      document.getElementById('lobby-screen').style.display = 'none';
-      document.getElementById(id).style.display = 'block';
-      activeId = id;
-      updateWallets();
-      if(id === 'bj-screen') bjReset();
-      if(id === 'ip-screen') ipReset();
-      if(id === 'sicbo-screen') sbClear();
-    }
-    function backToLobby() {
-      document.getElementById(activeId).style.display = 'none';
-      document.getElementById('lobby-screen').style.display = 'flex';
-      activeId = "lobby-screen";
+    function switchScreen(screenId, initCallback) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      target.classList.add('active');
+      updateAllBalances();
+      if(initCallback) initCallback();
     }
 
-    // トランプ共通デッキ
-    const suits = ['♠','♥','♦','♣'];
-    const isRed = {'♠':false,'♥':true,'♦':true,'♣':false};
-    function getShuffledDeck() {
-      let d = [];
-      for(let s of suits) {
-        for(let v=1; v<=13; v++) d.push({suit:s, val:v});
-      }
-      return d.sort(() => Math.random() - 0.5);
-    }
-    function buildCardHTML(card, isBack=false) {
-      if(isBack || !card) return `<div class="casino-card back">?</div>`;
-      let txt = card.val === 1 ? 'A' : card.val === 11 ? 'J' : card.val === 12 ? 'Q' : card.val === 13 ? 'K' : card.val;
-      return `<div class="casino-card ${isRed[card.suit] ? 'red' : ''}"><div>${txt}</div><div style="align-self:flex-end;">${card.suit}</div></div>`;
-    }
-
-    // ==========================================================================
-    // 1. シックボー (拡張版) ロジック
-    // ==========================================================================
-    let sbBets = {};
-    const sbKeys = ['small','big','anytriple','t4','t5','t6','t7','t8','t9','t10','t11','t12','t13','t14','t15','t16','t17'];
-    let sbRunning = false;
-
-    function sbPlace(key) {
-      if(sbRunning) return;
-      if(credit < currentChip) return;
-      credit -= currentChip;
-      sbBets[key] = (sbBets[key] || 0) + currentChip;
-      document.getElementById(`sb-pot-${key}`).innerHTML = `<div class="placed-chip">${sbBets[key]}</div>`;
-      updateSbTotalLabel();
-      updateWallets();
-    }
-    function updateSbTotalLabel() {
-      let sum = 0;
-      sbKeys.forEach(k => sum += (sbBets[k] || 0));
-      document.getElementById('sb-bet-total').innerText = sum;
-    }
-    function sbClear() {
-      if(sbRunning) return;
-      sbKeys.forEach(k => {
-        if(sbBets[k]) credit += sbBets[k];
+    function updateAllBalances() {
+      ['lobby', 'bj', 'indian', 'sicbo'].forEach(id => {
+        const el = document.getElementById(`${id}-balance`);
+        if(el) el.innerText = balance;
       });
-      sbBets = {};
-      sbKeys.forEach(k => document.getElementById(`sb-pot-${k}`).innerHTML = '');
-      document.querySelectorAll('.sb-cell').forEach(c => c.classList.remove('win'));
-      updateSbTotalLabel();
-      updateWallets();
     }
-    function sbRoll() {
-      let totalBet = 0;
-      sbKeys.forEach(k => totalBet += (sbBets[k] || 0));
-      if(sbRunning || totalBet === 0) return;
 
-      sbRunning = true;
-      document.getElementById('sb-msg').innerText = "ダイスをシェイク中...";
-      document.querySelectorAll('.sb-cell').forEach(c => c.classList.remove('win'));
+    // --- リアル・トランプ生成エンジン（絵札を伝統仕様に全面改修） ---
+    function createRealCard(card, isHidden = false) {
+      const el = document.createElement('div');
+      el.className = 'card';
+      if (isHidden) { el.classList.add('back'); return el; }
+      if (card.suit === '♥' || card.suit === '♦') el.classList.add('red');
 
-      let ticks = 0;
-      let anim = setInterval(() => {
-        document.getElementById('sb-d1').innerText = Math.floor(Math.random()*6)+1;
-        document.getElementById('sb-d2').innerText = Math.floor(Math.random()*6)+1;
-        document.getElementById('sb-d3').innerText = Math.floor(Math.random()*6)+1;
-        if(++ticks > 12) {
-          clearInterval(anim);
-          let r1 = Math.floor(Math.random()*6)+1;
-          let r2 = Math.floor(Math.random()*6)+1;
-          let r3 = Math.floor(Math.random()*6)+1;
-          document.getElementById('sb-d1').innerText = r1;
-          document.getElementById('sb-d2').innerText = r2;
-          document.getElementById('sb-d3').innerText = r3;
+      // インデックス（四隅の表記）
+      const indexTop = `<div class="index-container top-left"><div>${card.label}</div><div class="index-suit">${card.suit}</div></div>`;
+      const indexBottom = `<div class="index-container bottom-right"><div>${card.label}</div><div class="index-suit">${card.suit}</div></div>`;
 
-          let sum = r1 + r2 + r3;
-          let isTriple = (r1 === r2 && r2 === r3);
-          let winners = [];
+      let centerHTML = `<div class="card-center">`;
+      const num = card.rawValue;
 
-          if(isTriple) {
-            winners.push('anytriple');
-          } else {
-            if(sum >= 4 && sum <= 10) winners.push('small');
-            if(sum >= 11 && sum <= 17) winners.push('big');
-          }
-          winners.push(`t${sum}`);
+      if (card.label === 'A') {
+        centerHTML += `<div class="ace-center">${card.suit}</div>`;
+      } else if (['J', 'Q', 'K'].includes(card.label)) {
+        // --- 【新ロジック】伝統的なトランプ絵札（ダブルヘッド）をシミュレート ---
+        let avatarIcon = '🤵'; // デフォルト
+        if (card.label === 'J') avatarIcon = '🔱'; // 兵士・槍
+        if (card.label === 'Q') avatarIcon = '🌹'; // 女王・花
+        if (card.label === 'K') avatarIcon = '⚔️'; // 国王・剣
 
-          // 配当倍率の定義
-          const rates = { small:1, big:1, anytriple:30, t4:60, t5:30, t6:18, t7:12, t8:8, t9:7, t10:6, t11:6, t12:7, t13:8, t14:12, t15:18, t16:30, t17:60 };
-
-          let payout = 0;
-          winners.forEach(w => {
-            let cell = document.getElementById(`sb-bet-${w}`);
-            if(cell) cell.classList.add('win');
-            if(sbBets[w]) {
-              payout += sbBets[w] * (1 + rates[w]);
-            }
-          });
-
-          credit += payout;
-          document.getElementById('sb-msg').innerText = `出目: ${r1}, ${r2}, ${r3} (合計:${sum}) 配当: +${payout}`;
-          sbBets = {};
-          sbKeys.forEach(k => document.getElementById(`sb-pot-${k}`).innerHTML = '');
-          updateSbTotalLabel();
-          updateWallets();
-          sbRunning = false;
+        centerHTML += `
+          <div class="court-card-box">
+            <div class="court-side-border left"></div>
+            <!-- 上半分 -->
+            <div class="court-half top">
+              <div class="court-bg-suit">${card.suit}</div>
+              <div class="court-avatar">${avatarIcon}</div>
+            </div>
+            <!-- 下半分（上下対称） -->
+            <div class="court-half bottom">
+              <div class="court-bg-suit">${card.suit}</div>
+              <div class="court-avatar">${avatarIcon}</div>
+            </div>
+            <div class="court-side-border right"></div>
+          </div>
+        `;
+      } else {
+        // 数札（2〜10）の位置指定用
+        let positions = [];
+        if (num === 2) {
+          positions = [{t:20, l:50}, {t:80, l:50, inv:true}];
+        } else if (num === 3) {
+          positions = [{t:20, l:50}, {t:50, l:50}, {t:80, l:50, inv:true}];
+        } else if (num === 4) {
+          positions = [{t:20, l:25}, {t:20, l:75}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        } else if (num === 5) {
+          positions = [{t:20, l:25}, {t:20, l:75}, {t:50, l:50}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        } else if (num === 6) {
+          positions = [
+            {t:20, l:25}, {t:20, l:75},
+            {t:50, l:25}, {t:50, l:75},
+            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
+          ];
+        } else if (num === 7) {
+          positions = [
+            {t:20, l:25}, {t:20, l:75},
+            {t:35, l:50},
+            {t:50, l:25}, {t:50, l:75},
+            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
+          ];
+        } else if (num === 8) {
+          positions = [
+            {t:20, l:25}, {t:20, l:75},
+            {t:35, l:50},
+            {t:50, l:25}, {t:50, l:75},
+            {t:65, l:50, inv:true},
+            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
+          ];
+        } else if (num === 9) {
+          positions = [
+            {t:20, l:25}, {t:20, l:75},
+            {t:40, l:25}, {t:40, l:75},
+            {t:50, l:50},
+            {t:60, l:25, inv:true}, {t:60, l:75, inv:true},
+            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
+          ];
+        } else if (num === 10) {
+          positions = [
+            {t:20, l:25}, {t:20, l:75},
+            {t:32, l:50},
+            {t:44, l:25}, {t:44, l:75},
+            {t:56, l:25, inv:true}, {t:56, l:75, inv:true},
+            {t:68, l:50, inv:true},
+            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
+          ];
         }
-      }, 70);
-    }
 
-    // ==========================================================================
-    // 2. BLACKJACK ロジック
-    // ==========================================================================
-    let bjDeck, bjPlayerHand, bjDealerHand, bjBetAmt = 0, bjPhase = "betting";
-
-    function bjReset() {
-      bjBetAmt = 0; bjPhase = "betting";
-      document.getElementById('bj-pot').innerHTML = '';
-      document.getElementById('bj-bet-lbl').innerText = 0;
-      document.getElementById('bj-dealer-cards').innerHTML = '';
-      document.getElementById('bj-player-cards').innerHTML = '';
-      document.getElementById('bj-d-score').innerText = '?';
-      document.getElementById('bj-p-score').innerText = 0;
-      document.getElementById('bj-msg').innerText = "チップをベットエリアに置いて DEAL をクリック";
-      document.getElementById('btn-bj-deal').disabled = false;
-      document.getElementById('btn-bj-hit').disabled = true;
-      document.getElementById('btn-bj-stand').disabled = true;
-    }
-    function bjPlace() {
-      if(bjPhase !== "betting") return;
-      if(credit < currentChip) return;
-      credit -= currentChip; bjBetAmt += currentChip;
-      document.getElementById('bj-pot').innerHTML = `<div class="placed-chip">${bjBetAmt}</div>`;
-      document.getElementById('bj-bet-lbl').innerText = bjBetAmt;
-      updateWallets();
-    }
-    function calcBjScore(hand) {
-      let score = 0, aces = 0;
-      for(let c of hand) {
-        if(c.val > 10) score += 10;
-        else if(c.val === 1) { score += 11; aces++; }
-        else score += c.val;
+        positions.forEach(pos => {
+          const invClass = pos.inv ? 'inv' : '';
+          centerHTML += `<div class="c-suit ${invClass}" style="top:${pos.t}%; left:${pos.l}%;">${card.suit}</div>`;
+        });
       }
-      while(score > 21 && aces > 0) { score -= 10; aces--; }
+
+      centerHTML += `</div>`;
+      el.innerHTML = `${indexTop}${centerHTML}${indexBottom}`;
+      return el;
+    }
+
+    function generateShuffledDeck() {
+      let deck = [];
+      const labels = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+      for (let suit of suits) {
+        for (let i = 0; i < labels.length; i++) {
+          deck.push({ suit, label: labels[i], rawValue: i + 1 });
+        }
+      }
+      return deck.sort(() => Math.random() - 0.5);
+    }
+
+    function selectChip(value, el) {
+      currentSelectedChip = value;
+      document.querySelectorAll(`#${el.parentElement.id} .chip`).forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    function setDiceFace(elementId, value) {
+      const el = document.getElementById(elementId);
+      el.className = `real-dice face-${value}`;
+    }
+
+    // --- BLACKJACK LOGIC ---
+    let bjDeck, bjPlayerHand, bjDealerHand, bjBet;
+    function initBJ() {
+      bjBet = 0;
+      document.getElementById('bj-player-cards').innerHTML = '';
+      document.getElementById('bj-dealer-cards').innerHTML = '';
+      document.getElementById('bj-player-score').innerText = '0';
+      document.getElementById('bj-dealer-score').innerText = '?';
+      document.getElementById('bj-bet-total').innerText = '0';
+      document.getElementById('bj-status').innerText = 'チップを選んでベットを追加し、ディールしてください';
+      setBJButtons(true, true, false, false, false, false);
+    }
+    function setBJButtons(add, deal, hit, stay, double, surrender) {
+      document.getElementById('bj-btn-addbet').disabled = !add;
+      document.getElementById('bj-btn-deal').disabled = !deal;
+      document.getElementById('bj-btn-hit').disabled = !hit;
+      document.getElementById('bj-btn-stay').disabled = !stay;
+      document.getElementById('bj-btn-double').disabled = !double;
+      document.getElementById('bj-btn-surrender').disabled = !surrender;
+    }
+    function bjAddBet() {
+      if(balance < currentSelectedChip) return alert("資金が足りません");
+      balance -= currentSelectedChip; bjBet += currentSelectedChip;
+      document.getElementById('bj-bet-total').innerText = bjBet; updateAllBalances();
+      setBJButtons(true, bjBet > 0, false, false, false, false);
+    }
+    function bjClearBet() {
+      balance += bjBet; bjBet = 0; document.getElementById('bj-bet-total').innerText = 0;
+      updateAllBalances(); setBJButtons(true, false, false, false, false, false);
+    }
+    function calcBJScore(hand) {
+      let score = 0, aces = 0;
+      for (let c of hand) {
+        if (c.label === 'A') { aces++; score += 11; }
+        else if (['K','Q','J'].includes(c.label)) { score += 10; }
+        else { score += c.rawValue; }
+      }
+      while (score > 21 && aces > 0) { score -= 10; aces--; }
       return score;
     }
     function bjDeal() {
-      if(bjBetAmt === 0 || bjPhase !== "betting") return;
-      bjPhase = "playing";
-      bjDeck = getShuffledDeck();
+      bjDeck = generateShuffledDeck();
       bjPlayerHand = [bjDeck.pop(), bjDeck.pop()];
       bjDealerHand = [bjDeck.pop(), bjDeck.pop()];
-
-      document.getElementById('btn-bj-deal').disabled = true;
-      document.getElementById('btn-bj-hit').disabled = false;
-      document.getElementById('btn-bj-stand').disabled = false;
-      document.getElementById('bj-msg').innerText = "HIT（もう1枚）か STAND（勝負）か？";
-
-      renderBjMatrix(false);
-      
-      if(calcBjScore(bjPlayerHand) === 21) {
-        bjStand(); // ナチュラル21は自動スタンド
+      renderBJView(false);
+      if(calcBJScore(bjPlayerHand) === 21) bjEndGame("BLACK JACK! (配当 1.5倍)", 2.5);
+      else {
+        document.getElementById('bj-status').innerText = "アクションを選択してください";
+        setBJButtons(false, false, true, true, true, true);
       }
     }
-    function renderBjMatrix(showAll) {
-      document.getElementById('bj-player-cards').innerHTML = bjPlayerHand.map(c => buildCardHTML(c)).join('');
-      document.getElementById('bj-p-score').innerText = calcBjScore(bjPlayerHand);
-      if(showAll) {
-        document.getElementById('bj-dealer-cards').innerHTML = bjDealerHand.map(c => buildCardHTML(c)).join('');
-        document.getElementById('bj-d-score').innerText = calcBjScore(bjDealerHand);
-      } else {
-        document.getElementById('bj-dealer-cards').innerHTML = buildCardHTML(bjDealerHand[0]) + buildCardHTML(null, true);
-        document.getElementById('bj-d-score').innerText = bjDealerHand[0].val > 10 ? 10 : (bjDealerHand[0].val === 1 ? 11 : bjDealerHand[0].val);
-      }
+    function renderBJView(showDealerAll) {
+      const pArea = document.getElementById('bj-player-cards');
+      const dArea = document.getElementById('bj-dealer-cards');
+      pArea.innerHTML = ''; dArea.innerHTML = '';
+      bjPlayerHand.forEach(c => pArea.appendChild(createRealCard(c)));
+      bjDealerHand.forEach((c, idx) => dArea.appendChild(createRealCard(c, idx === 0 && !showDealerAll)));
+      document.getElementById('bj-player-score').innerText = calcBJScore(bjPlayerHand);
+      document.getElementById('bj-dealer-score').innerText = showDealerAll ? calcBJScore(bjDealerHand) : '?';
     }
     function bjHit() {
-      if(bjPhase !== "playing") return;
-      bjPlayerHand.push(bjDeck.pop());
-      renderBjMatrix(false);
-      if(calcBjScore(bjPlayerHand) > 21) {
-        bjEndMatch("プレイヤーバースト！敗北です。", 0);
+      setBJButtons(false, false, true, true, false, false);
+      bjPlayerHand.push(bjDeck.pop()); renderBJView(false);
+      if(calcBJScore(bjPlayerHand) > 21) bjEndGame("BUST (バースト) 敗北", 0);
+    }
+    function bjStay() {
+      renderBJView(true);
+      while(calcBJScore(bjDealerHand) < 17) { bjDealerHand.push(bjDeck.pop()); }
+      renderBJView(true);
+      let p = calcBJScore(bjPlayerHand), d = calcBJScore(bjDealerHand);
+      if (d > 21) bjEndGame("ディーラーバースト！プレイヤーの勝ち", 2.0);
+      else if (p > d) bjEndGame("あなたの勝ち！", 2.0);
+      else if (p < d) bjEndGame("ディーラーの勝ち、敗北", 0);
+      else bjEndGame("引き分け（プッシュ）払い戻し", 1.0);
+    }
+    function bjDoubleDown() {
+      if(balance < bjBet) return alert("追加資金がありません");
+      balance -= bjBet; bjBet *= 2; document.getElementById('bj-bet-total').innerText = bjBet; updateAllBalances();
+      bjPlayerHand.push(bjDeck.pop()); renderBJView(true);
+      if(calcBJScore(bjPlayerHand) > 21) bjEndGame("BUST (バースト) ダブルダウン失敗", 0);
+      else bjStay();
+    }
+    function bjSurrender() {
+      balance += bjBet * 0.5; bjBet = 0; updateAllBalances();
+      document.getElementById('bj-status').innerText = "サレンダー成立：半額返金";
+      setBJButtons(true, false, false, false, false, false);
+    }
+    function bjEndGame(msg, payoutFactor) {
+      renderBJView(true); if(payoutFactor > 0) balance += bjBet * payoutFactor;
+      bjBet = 0; updateAllBalances(); document.getElementById('bj-status').innerText = msg;
+      setBJButtons(true, false, false, false, false, false);
+    }
+
+    // --- INDIAN POKER LOGIC ---
+    let indianDeck, indianPlayerCard, indianDealerCard, playerChangeLeft;
+    function initIndian() {
+      document.getElementById('indian-player-cards').innerHTML = '';
+      document.getElementById('indian-dealer-cards').innerHTML = '';
+      document.getElementById('indian-pot').innerText = '0';
+      document.getElementById('indian-status').innerText = "アンティ($50)を支払ってゲームを開幕します";
+      document.getElementById('indian-dealer-bubble').innerText = "ガチンコ心理戦といこう。";
+      setIndianBtns(true, false, false, false);
+    }
+    function setIndianBtns(start, change, bet, fold) {
+      document.getElementById('indian-btn-start').disabled = !start;
+      document.getElementById('indian-btn-change').disabled = !change;
+      document.getElementById('indian-btn-bet').disabled = !bet;
+      document.getElementById('indian-btn-fold').disabled = !fold;
+    }
+    function mapIndianRank(deck) {
+      deck.forEach(c => {
+        if(c.rawValue === 1) c.pRank = 14;
+        else c.pRank = c.rawValue;
+      });
+    }
+    function indianStart() {
+      if(balance < 50) return alert("アンティが足りません");
+      balance -= 50; document.getElementById('indian-pot').innerText = '100'; updateAllBalances();
+      playerChangeLeft = 2; document.getElementById('p-change-count').innerText = playerChangeLeft;
+      indianDeck = generateShuffledDeck();
+      mapIndianRank(indianDeck);
+      indianPlayerCard = indianDeck.pop();
+      indianDealerCard = indianDeck.pop();
+      updateIndianCardsView();
+      dealerAIAction(true);
+      document.getElementById('indian-status').innerText = "相手のカードのみ見えています。勝負するか、カードを交換してください。";
+      setIndianBtns(false, true, true, true);
+    }
+    function updateIndianCardsView() {
+      document.getElementById('indian-dealer-cards').innerHTML = '';
+      document.getElementById('indian-dealer-cards').appendChild(createRealCard(indianDealerCard));
+      document.getElementById('indian-player-cards').innerHTML = '';
+      document.getElementById('indian-player-cards').appendChild(createRealCard(indianPlayerCard, true));
+    }
+    function dealerAIAction(isOpeningBubbleOnly = false) {
+      const bubble = document.getElementById('indian-dealer-bubble');
+      let visiblePlayerRank = indianPlayerCard.pRank;
+
+      if (isOpeningBubbleOnly) {
+        if (visiblePlayerRank >= 11) bubble.innerText = "うわぁ、君のおでこに恐ろしいカードが見えるな…";
+        else bubble.innerText = "ふふん、その程度のカードなら、僕が有利そうだ。";
+        return;
+      }
+
+      if (visiblePlayerRank >= 10) {
+        indianDealerCard = indianDeck.pop();
+        bubble.innerText = `君のカードが強すぎるから、賭けに出るためにカードを変えたよ！`;
+        updateIndianCardsView();
+      } else {
+        bubble.innerText = "交換は必要ない。このまま勝負をさせてもらうよ。";
       }
     }
-    function bjStand() {
-      if(bjPhase !== "playing") return;
-      bjPhase = "dealer";
-      document.getElementById('btn-bj-hit').disabled = true;
-      document.getElementById('btn-bj-stand').disabled = true;
+    function indianPlayerChange() {
+      if(playerChangeLeft <= 0) return;
+      indianPlayerCard = indianDeck.pop();
+      playerChangeLeft--;
+      document.getElementById('p-change-count').innerText = playerChangeLeft;
+      updateIndianCardsView();
+      document.getElementById('indian-status').innerText = "自分のカードを交換しました。ディーラーもこれを見て対応を考えます。";
+      setTimeout(() => { dealerAIAction(false); }, 600);
+      if(playerChangeLeft === 0) document.getElementById('indian-btn-change').disabled = true;
+    }
+    function indianAction(action) {
+      document.getElementById('indian-player-cards').innerHTML = '';
+      document.getElementById('indian-player-cards').appendChild(createRealCard(indianPlayerCard));
+      let isPlayerWin = false;
+      if(indianPlayerCard.pRank > indianDealerCard.pRank) isPlayerWin = true;
+      else if(indianPlayerCard.pRank < indianDealerCard.pRank) isPlayerWin = false;
+      else {
+        if(suitRank[indianPlayerCard.suit] > suitRank[indianDealerCard.suit]) isPlayerWin = true;
+        else isPlayerWin = false;
+      }
 
-      renderBjMatrix(true);
-      let dScore = calcBjScore(bjDealerHand);
-
-      let loop = setInterval(() => {
-        if(dScore < 17) {
-          bjDealerHand.push(bjDeck.pop());
-          renderBjMatrix(true);
-          dScore = calcBjScore(bjDealerHand);
+      if(action === 'fold') {
+        document.getElementById('indian-status').innerText = `フォールドしました。アンティ没収。(あなた: ${indianPlayerCard.suit}${indianPlayerCard.label} / 相手: ${indianDealerCard.suit}${indianDealerCard.label})`;
+        document.getElementById('indian-pot').innerText = '0';
+        document.getElementById('indian-dealer-bubble').innerText = "逃げたね！開けてみたら僕の方が弱かったかもしれないのにね。";
+      } else {
+        if(balance < 50) return alert("資金不足");
+        balance -= 50; document.getElementById('indian-pot').innerText = '200';
+        if(isPlayerWin) {
+          balance += 200;
+          document.getElementById('indian-status').innerText = `勝負あり：見事勝利！ $200獲得！ (あなた: ${indianPlayerCard.suit}${indianPlayerCard.label} vs 相手: ${indianDealerCard.suit}${indianDealerCard.label})`;
+          document.getElementById('indian-dealer-bubble').innerText = "ぐわああ！君の方が強かったかー！！";
         } else {
-          clearInterval(loop);
-          let pScore = calcBjScore(bjPlayerHand);
-          if(dScore > 21) {
-            bjEndMatch("ディーラーバースト！勝利！", 2);
-          } else if(pScore > dScore) {
-            bjEndMatch("おめでとうございます！プレイヤーの勝ちです。", 2);
-          } else if(pScore < dScore) {
-            bjEndMatch("ディーラーの勝ちです。", 0);
-          } else {
-            bjEndMatch("引き分け（プッシュ）です。", 1);
+          document.getElementById('indian-status').innerText = `勝負あり：敗北！ ディーラーの勝ち。(あなた: ${indianPlayerCard.suit}${indianPlayerCard.label} vs 相手: ${indianDealerCard.suit}${indianDealerCard.label})`;
+          document.getElementById('indian-dealer-bubble').innerText = "よし！運も実力のうちさ！僕の勝ち！";
+        }
+      }
+      updateAllBalances();
+      setIndianBtns(true, false, false, false);
+    }
+
+    // --- SIC BO LOGIC ---
+    let sicboBets = {
+      big: 0, small: 0, anyTriple: 0,
+      triple1: 0, triple2: 0, triple3: 0, triple4: 0, triple5: 0, triple6: 0,
+      sum4: 0, sum5: 0, sum6: 0, sum7: 0, sum8: 0, sum9: 0, sum10: 0,
+      single1: 0, single2: 0, single3: 0, single4: 0, single5: 0, single6: 0
+    };
+    let sicboTotalBetAmount = 0;
+    function initSicbo() { sicboClearBet(); }
+    function placeSicboBet(type) {
+      if(balance < currentSelectedChip) return alert("資金が足りません");
+      balance -= currentSelectedChip;
+      sicboBets[type] += currentSelectedChip;
+      sicboTotalBetAmount += currentSelectedChip;
+      const chipBadge = document.getElementById(`chip-${type}`);
+      if(chipBadge) { chipBadge.innerText = `$${sicboBets[type]}`; chipBadge.style.display = 'block'; }
+      document.getElementById('sicbo-total-bet').innerText = sicboTotalBetAmount;
+      updateAllBalances();
+    }
+    function sicboClearBet() {
+      for(let key in sicboBets) {
+        balance += sicboBets[key]; sicboBets[key] = 0;
+        const badge = document.getElementById(`chip-${key}`);
+        if(badge) { badge.innerText = '0'; badge.style.display = 'none'; }
+      }
+      sicboTotalBetAmount = 0; document.getElementById('sicbo-total-bet').innerText = 0;
+      updateAllBalances();
+    }
+    function sicboRoll() {
+      if(sicboTotalBetAmount === 0) return alert("どこかにチップを賭けてください");
+      const d1 = document.getElementById('sd-1');
+      const d2 = document.getElementById('sd-2');
+      const d3 = document.getElementById('sd-3');
+      d1.classList.add('rolling'); d2.classList.add('rolling'); d3.classList.add('rolling');
+      setTimeout(() => {
+        d1.classList.remove('rolling'); d2.classList.remove('rolling'); d3.classList.remove('rolling');
+        const r1 = Math.floor(Math.random() * 6) + 1;
+        const r2 = Math.floor(Math.random() * 6) + 1;
+        const r3 = Math.floor(Math.random() * 6) + 1;
+        setDiceFace('sd-1', r1); setDiceFace('sd-2', r2); setDiceFace('sd-3', r3);
+        
+        const sum = r1 + r2 + r3;
+        const isTriple = (r1 === r2 && r2 === r3);
+        const diceArray = [r1, r2, r3];
+        let totalWinAmount = 0;
+        let resultDetails = [];
+
+        if (sicboBets.big > 0 && sum >= 11 && sum <= 17 && !isTriple) { let p = sicboBets.big * 2; totalWinAmount += p; resultDetails.push(`大[$${p}]`); }
+        if (sicboBets.small > 0 && sum >= 4 && sum <= 10 && !isTriple) { let p = sicboBets.small * 2; totalWinAmount += p; resultDetails.push(`小[$${p}]`); }
+        if (sicboBets.anyTriple > 0 && isTriple) { let p = sicboBets.anyTriple * 31; totalWinAmount += p; resultDetails.push(`任意のゾロ目[$${p}]`); }
+        for (let i = 1; i <= 6; i++) {
+          if (sicboBets[`triple${i}`] > 0 && isTriple && r1 === i) { let p = sicboBets[`triple${i}`] * 181; totalWinAmount += p; resultDetails.push(`特定ゾロ目${i}[$${p}]`); }
+        }
+        const checkSum = (betKey, targetSum, odds) => {
+          if (sicboBets[betKey] > 0 && sum === targetSum) { let p = sicboBets[betKey] * (odds + 1); totalWinAmount += p; resultDetails.push(`合計${targetSum}[$${p}]`); }
+        };
+        checkSum('sum4', 4, 60); checkSum('sum4', 17, 60);
+        checkSum('sum5', 5, 30); checkSum('sum5', 16, 30);
+        checkSum('sum6', 6, 18); checkSum('sum6', 15, 18);
+        checkSum('sum7', 7, 12); checkSum('sum7', 14, 12);
+        checkSum('sum8', 8, 8);  checkSum('sum8', 13, 8);
+        checkSum('sum9', 9, 7);  checkSum('sum9', 12, 7);
+        checkSum('sum10', 10, 6);checkSum('sum10', 11, 6);
+
+        for (let i = 1; i <= 6; i++) {
+          if (sicboBets[`single${i}`] > 0) {
+            let count = diceArray.filter(x => x === i).length;
+            if (count === 1) { let p = sicboBets[`single${i}`] * 2; totalWinAmount += p; resultDetails.push(`シングル${i}×1[$${p}]`); }
+            else if (count === 2) { let p = sicboBets[`single${i}`] * 3; totalWinAmount += p; resultDetails.push(`シングル${i}×2[$${p}]`); }
+            else if (count === 3) { let p = sicboBets[`single${i}`] * 13; totalWinAmount += p; resultDetails.push(`シングル${i}×3[$${p}]`); }
           }
         }
-      }, 500);
-    }
-    function bjEndMatch(msg, mul) {
-      document.getElementById('bj-msg').innerText = msg;
-      credit += bjBetAmt * mul;
-      updateWallets();
-      setTimeout(bjReset, 3000);
+
+        if (totalWinAmount > 0) {
+          balance += totalWinAmount;
+          document.getElementById('sicbo-status').innerText = `出目: ${r1}, ${r2}, ${r3} (合計:${sum}) 🎯 的中! ＋$${totalWinAmount} (${resultDetails.join(', ')})`;
+        } else {
+          document.getElementById('sicbo-status').innerText = `出目: ${r1}, ${r2}, ${r3} (合計:${sum}) ❌ ハズレ`;
+        }
+        for(let key in sicboBets) { sicboBets[key] = 0; const badge = document.getElementById(`chip-${key}`); if(badge) badge.style.display = 'none'; }
+        sicboTotalBetAmount = 0; document.getElementById('sicbo-total-bet').innerText = 0;
+        updateAllBalances();
+      }, 900);
     }
 
-    // ==========================================================================
-    // 3. インディアンポーカー ロジック
-    // ==========================================================================
-    let ipDeck, ipMyCard, ipOppCard, ipBetAmt = 0, ipPhase = "betting";
-
-    function ipReset() {
-      ipBetAmt = 0; ipPhase = "betting";
-      document.getElementById('ip-bet-lbl').innerText = 0;
-      document.getElementById('ip-opp-cards').innerHTML = '';
-      document.getElementById('ip-my-cards').innerHTML = '';
-      document.getElementById('ip-msg').innerText = "BETを押すとゲーム開始（アンティ10枚を自動徴収します）";
-      document.getElementById('btn-ip-fold').disabled = true;
-      document.getElementById('btn-ip-call').disabled = true;
-      document.getElementById('btn-ip-raise').disabled = false;
-    }
-    function ipRaise() {
-      if(ipPhase === "betting") {
-        if(credit < 10) return; // ミニマムアンティ
-        credit -= 10; ipBetAmt = 10;
-        ipPhase = "playing";
-        ipDeck = getShuffledDeck();
-        ipMyCard = ipDeck.pop();
-        ipOppCard = ipDeck.pop();
-
-        document.getElementById('ip-opp-cards').innerHTML = buildCardHTML(ipOppCard);
-        document.getElementById('ip-my-cards').innerHTML = buildCardHTML(null, true);
-        document.getElementById('btn-ip-fold').disabled = false;
-        document.getElementById('btn-ip-call').disabled = false;
-        document.getElementById('ip-msg').innerText = "相手のカードを見て、BET（上乗せ）するかCALL勝負するか、降参(FOLD)を選んでください";
-      } else if(ipPhase === "playing") {
-        if(credit < currentChip) return;
-        credit -= currentChip;
-        ipBetAmt += currentChip;
-        document.getElementById('ip-msg').innerText = `ベットを追加しました (+${currentChip})`;
-      }
-      document.getElementById('ip-bet-lbl').innerText = ipBetAmt;
-      updateWallets();
-    }
-    function ipFold() {
-      if(ipPhase !== "playing") return;
-      document.getElementById('ip-my-cards').innerHTML = buildCardHTML(ipMyCard);
-      document.getElementById('ip-msg').innerText = `フォールドしました。ポットの ${ipBetAmt} チップは没収されます。`;
-      ipMatchResult(0);
-    }
-    function ipShowdown() {
-      if(ipPhase !== "playing") return;
-      document.getElementById('ip-my-cards').innerHTML = buildCardHTML(ipMyCard);
-      
-      // ルール: A(1)が最弱、K(13)が最強
-      if(ipMyCard.val > ipOppCard.val) {
-        document.getElementById('ip-msg').innerText = `あなたの勝ち！ (自分:${ipMyCard.val} vs 相手:${ipOppCard.val}) +${ipBetAmt * 2}`;
-        ipMatchResult(2);
-      } else if(ipMyCard.val < ipOppCard.val) {
-        document.getElementById('ip-msg').innerText = `あなたの負け... (自分:${ipMyCard.val} vs 相手:${ipOppCard.val})`;
-        ipMatchResult(0);
-      } else {
-        document.getElementById('ip-msg').innerText = `引き分けです。(同数字)`;
-        ipMatchResult(1);
-      }
-    }
-    function ipMatchResult(mul) {
-      credit += ipBetAmt * mul;
-      updateWallets();
-      document.getElementById('btn-ip-fold').disabled = true;
-      document.getElementById('btn-ip-call').disabled = true;
-      document.getElementById('btn-ip-raise').disabled = true;
-      setTimeout(ipReset, 3500);
-    }
-
-    // 初期化直行
-    window.onload = function() {
-      updateWallets();
-    };
+    window.addEventListener('DOMContentLoaded', () => {
+      updateAllBalances();
+    });
   </script>
 </body>
 </html>
