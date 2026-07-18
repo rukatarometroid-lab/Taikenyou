@@ -3,1217 +3,500 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>BET OR NOT, GET OR ROT.</title>
-  <!-- 高級シネマティックフォント -->
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Sans+JP:wght@300;500;700&display=swap" rel="stylesheet">
-  <!-- アニメーション GSAP -->
+  <title>THE VIP ROOM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   
   <style>
-    /* ==========================================================================
-       1. 漆黒・ゴールド・血赤の超高級カラーシステム
-       ========================================================================== */
     :root {
       --gold-metallic: linear-gradient(135deg, #fcedc5 0%, #d19e53 25%, #f3d492 50%, #a6742a 80%, #ffd993 100%);
       --gold-solid: #d19e53;
       --gold-bright: #fcd58c;
-      --gold-glow: 0 0 20px rgba(209, 158, 83, 0.6), 0 0 40px rgba(209, 158, 83, 0.2);
-      --casino-bg: radial-gradient(circle at 50% 35%, #250606 0%, #080101 60%, #000000 100%);
-      --card-bg: linear-gradient(135deg, #180909 0%, #050101 100%);
+      --casino-bg: radial-gradient(circle at 50% 35%, #220505 0%, #050101 70%, #000000 100%);
+      --card-bg: linear-gradient(135deg, #150707 0%, #050000 100%);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
-      background-color: #000;
-      color: #f7f3eb;
-      font-family: 'Noto Sans JP', sans-serif;
-      overflow: hidden;
-      height: 100vh;
-      width: 100vw;
-      user-select: none;
-      perspective: 1200px;
+      background-color: #000; color: #f7f3eb; font-family: 'Noto Sans JP', sans-serif;
+      overflow: hidden; height: 100vh; width: 100vw; user-select: none;
     }
+    .cinema-text { font-family: 'Cinzel', serif; letter-spacing: 0.15em; }
 
-    .cinema-text {
-      font-family: 'Cinzel', serif;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-    }
-
-    .btn-gold-3d {
-      background: linear-gradient(180deg, rgba(30, 20, 10, 0.9) 0%, rgba(10, 5, 0, 0.95) 100%);
-      border: 2px solid var(--gold-solid);
-      outline: 1px solid rgba(252, 237, 197, 0.3);
-      outline-offset: -5px;
-      color: var(--gold-bright);
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(252, 213, 140, 0.4);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 15px rgba(209, 158, 83, 0.2);
-      padding: 16px 45px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-radius: 2px;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-
-    .btn-gold-3d:hover {
-      border-color: #ffd993;
-      color: #fff;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.9), 0 0 25px rgba(209, 158, 83, 0.6), inset 0 0 15px rgba(253, 221, 165, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .btn-gold-3d::after {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 50%; height: 100%;
-      background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
-      transform: skewX(-25deg);
-    }
-
-    .btn-gold-3d:hover::after {
-      left: 150%;
-      transition: all 0.8s ease-in-out;
-    }
-
-    .exit-btn {
-      position: absolute;
-      top: 25px;
-      left: 25px;
-      background: rgba(0, 0, 0, 0.85);
-      border: 1px solid var(--gold-solid);
-      outline: 1px solid rgba(252, 237, 197, 0.15);
-      outline-offset: -3px;
-      color: var(--gold-solid);
-      padding: 8px 22px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      z-index: 100;
-      cursor: pointer;
-      border-radius: 1px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      transition: all 0.3s;
-    }
-    .exit-btn:hover {
-      border-color: #ffd993;
-      color: #fff;
-      box-shadow: var(--gold-glow);
-    }
-
-    .screen {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      display: none;
-    }
-
-    /* ==========================================================================
-       2. ① オープニングシネマ
-       ========================================================================== */
-    #opening-screen {
-      display: block;
-      background: var(--casino-bg);
-      z-index: 10;
-    }
-
-    .bg-roulette {
-      position: absolute;
-      top: 55%;
-      left: 50%;
-      width: 120vmin;
-      height: 120vmin;
-      transform: translate(-50%, -50%) rotate(0deg);
-      opacity: 0.08;
-      background: radial-gradient(circle, transparent 30%, #200 31%, #100 35%, transparent 70%),
-                  repeating-conic-gradient(from 0deg, #300a0a 0deg 10deg, #050000 10deg 20deg);
-      border-radius: 50%;
-      border: 6px double var(--gold-solid);
-      pointer-events: none;
-      box-shadow: 0 0 100px rgba(209, 158, 83, 0.15) inset;
-    }
-
-    #particle-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .floating-suit {
-      position: absolute;
-      font-size: 3.5rem;
-      color: rgba(209, 158, 83, 0.12);
-      pointer-events: none;
-      z-index: 1;
-      transform-style: preserve-3d;
-    }
-
-    .op-title-wrap {
-      position: absolute;
-      top: 38%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      width: 90%;
-      z-index: 5;
-    }
-
-    .singularity {
-      width: 8px;
-      height: 8px;
-      background: #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 40px 20px #ffd993, 0 0 120px 60px #fff;
-      margin: 0 auto;
-      transform: scale(0);
-    }
-
-    .pre-title {
-      color: #9d1a1a;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.4em;
-      margin-bottom: 12px;
-      text-shadow: 0 0 15px rgba(157, 26, 26, 0.6);
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-
-    .main-slogan {
-      font-size: 3.2rem;
-      font-weight: 900;
-      line-height: 1.15;
-      letter-spacing: 0.12em;
-      opacity: 0;
-      background: var(--gold-metallic);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 20px rgba(209, 158, 83, 0.35));
-    }
-
-    @media (max-width: 600px) {
-      .main-slogan { font-size: 2.1rem; }
-      .pre-title { font-size: 0.65rem; }
-      .sub-title { font-size: 0.6rem !important; }
-    }
-
-    .sub-title {
-      font-size: 0.75rem;
-      color: #8c765c;
-      letter-spacing: 0.35em;
-      margin-top: 15px;
-      opacity: 0;
-      transform: translateY(10px);
-    }
-
-    .sub-title-suits {
-      color: #a62424;
-      font-size: 0.8rem;
-      letter-spacing: 0.8em;
-      margin-top: 10px;
-    }
-
-    .enter-trigger-wrap {
-      position: absolute;
-      bottom: 18%;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 6;
-      opacity: 0;
-    }
-
-    /* ==========================================================================
-       3. ② トランジション扉
-       ========================================================================== */
-    .gate-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 999;
-    }
-
-    .gate {
-      position: absolute;
-      top: 0;
-      width: 50%;
-      height: 100%;
-      background: linear-gradient(135deg, #180909, #050000);
-      box-shadow: 0 0 100px rgba(0,0,0,0.98) inset;
-    }
-
-    .gate-left { 
-      left: -50%; 
-      border-right: 3px solid var(--gold-solid); 
-      box-shadow: 5px 0 30px rgba(209, 158, 83, 0.3), inset -100px 0 100px rgba(0,0,0,0.9);
-    }
-    .gate-right { 
-      right: -50%; 
-      border-left: 3px solid var(--gold-solid); 
-      box-shadow: -5px 0 30px rgba(209, 158, 83, 0.3), inset 100px 0 100px rgba(0,0,0,0.9);
-    }
-
-    /* ==========================================================================
-       4. ③ ロビー
-       ========================================================================== */
-    #lobby-screen {
-      background: var(--casino-bg);
-    }
-
+    /* ロビー UI */
     .lobby-wrap {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: center;
-      padding: 6vh 20px;
-      position: relative;
-      z-index: 5;
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; padding: 20px; background: var(--casino-bg);
     }
-
-    .lobby-title-area h2 {
-      font-size: 1.8rem;
-      background: var(--gold-metallic);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
-      text-align: center;
-      line-height: 1.3;
-    }
-
-    .lobby-cards {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      width: 100%;
-      max-width: 850px;
-    }
-
-    @media (max-width: 600px) {
-      .lobby-cards {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        max-width: 300px;
-      }
-      .lobby-card {
-        height: 13vh !important;
-        min-height: 80px !important;
-      }
-      .lobby-title-area h2 {
-        font-size: 1.3rem;
-      }
+    .lobby-title { font-size: 2.2rem; background: var(--gold-metallic); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 40px; text-align: center; }
+    .lobby-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; max-width: 900px; }
+    
+    @media (max-width: 768px) {
+      .lobby-cards { grid-template-columns: 1fr; max-width: 320px; }
+      .lobby-card { height: 110px !important; }
+      .lobby-title { font-size: 1.6rem; }
     }
 
     .lobby-card {
-      background: var(--card-bg);
-      border: 1.5px solid rgba(209, 158, 83, 0.35);
-      outline: 1px solid rgba(252, 237, 197, 0.1);
-      outline-offset: -5px;
-      border-radius: 4px;
-      height: 25vh;
-      min-height: 160px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.95);
-      transition: all 0.4s;
+      background: var(--card-bg); border: 1.5px solid rgba(209, 158, 83, 0.4); border-radius: 4px;
+      height: 200px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.7);
     }
+    .lobby-card:hover { border-color: var(--gold-bright); transform: translateY(-3px); box-shadow: 0 0 15px rgba(209,158,83,0.4); }
+    .card-icon { font-size: 2.5rem; margin-bottom: 8px; color: var(--gold-solid); }
+    .card-name { font-size: 1rem; font-weight: 700; color: #fff; }
 
-    .lobby-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: radial-gradient(circle at 50% 50%, rgba(157, 26, 26, 0.15) 0%, transparent 80%);
-      opacity: 0;
-      transition: opacity 0.4s;
-    }
+    /* ゲーム共通 UI */
+    .screen { display: none; position: absolute; top:0; left:0; width:100%; height:100%; background: var(--casino-bg); }
+    .table-rim { position: absolute; top: 0; width: 100%; height: 15px; background: #100; border-bottom: 2px solid var(--gold-solid); }
+    .exit-btn { position: absolute; top: 25px; left: 25px; background: #000; border: 1px solid var(--gold-solid); color: var(--gold-solid); padding: 6px 16px; font-size: 0.75rem; font-weight: bold; cursor: pointer; z-index: 10; }
+    
+    .game-content { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 70px 20px 20px 20px; gap: 15px; overflow-y: auto; }
+    .hud-bar { display: flex; justify-content: space-between; width: 100%; max-width: 600px; background: rgba(0,0,0,0.6); border: 1px solid rgba(209,158,83,0.3); padding: 10px 20px; border-radius: 4px; font-weight: bold; }
+    .gold-val { color: var(--gold-bright); }
+    
+    .table-board { background: rgba(15, 4, 4, 0.95); border: 2px solid var(--gold-solid); width: 100%; max-width: 600px; padding: 20px; border-radius: 6px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+    .status-msg { font-size: 1rem; color: var(--gold-bright); text-align: center; font-weight: bold; min-height: 24px; margin-bottom: 15px; }
 
-    .lobby-card:hover {
-      border-color: var(--gold-bright);
-      box-shadow: var(--gold-glow), 0 15px 35px rgba(0,0,0,0.95);
-      transform: translateY(-5px);
-    }
+    /* コントロール */
+    .ctrl-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid rgba(209,158,83,0.2); padding-top: 15px; gap: 10px; }
+    .chip-selector { display: flex; gap: 8px; }
+    .chip-btn { width: 36px; height: 36px; border-radius: 50%; background: #222; border: 2px solid var(--gold-solid); color: var(--gold-bright); font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+    .chip-btn.selected { background: var(--gold-metallic); color: #000; border-color: #fff; }
+    .action-group { display: flex; gap: 8px; }
+    .btn-action { background: #111; border: 1px solid var(--gold-solid); color: #fff; padding: 8px 16px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border-radius: 2px; }
+    .btn-main { background: linear-gradient(to bottom, #9d1a1a, #5a0505); border-color: #ffd993; }
 
-    .lobby-card:hover::before { opacity: 1; }
+    /* 各ゲーム専用スタイル */
+    /* シックボー */
+    .sb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .sb-cell { background: rgba(0,0,0,0.4); border: 1px solid rgba(209,158,83,0.3); padding: 15px; text-align: center; border-radius: 4px; cursor: pointer; }
+    .sb-cell.win { background: rgba(157,26,26,0.6) !important; border-color: #fff; }
+    .chip-pot { min-height: 24px; margin-top: 5px; display: flex; justify-content: center; }
+    .placed-chip { background: radial-gradient(circle, #ffd993, #a6742a); color: #000; font-size: 0.7rem; font-weight: 900; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .cup-area { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+    .dice-visual { width: 32px; height: 32px; background: #fff; color: #000; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; }
 
-    .card-icon {
-      font-size: 2.6rem;
-      margin-bottom: 10px;
-      color: var(--gold-solid);
-      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.9));
-      transition: color 0.3s;
-    }
-    .lobby-card:hover .card-icon { color: var(--gold-bright); }
-
-    .card-name {
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: #eae5da;
-      transition: color 0.3s;
-    }
-    .lobby-card:hover .card-name { color: #fff; }
-
-    .lobby-footer-tip {
-      font-size: 0.75rem;
-      color: #6a5340;
-      letter-spacing: 0.15em;
-    }
-
-    /* ==========================================================================
-       5. ♠ カジノ共通・ゲームレイアウト
-       ========================================================================== */
-    .table-rim {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 25px;
-      background: linear-gradient(to bottom, #180505, #000);
-      border-bottom: 2.5px solid var(--gold-solid);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.8);
-    }
-
-    .game-content {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 9vh 15px 2vh 15px;
-      gap: 1.5vh;
-      background: var(--casino-bg);
-      overflow-y: auto;
-    }
-
-    .signboard {
-      background: rgba(10, 3, 3, 0.98);
-      border: 2px solid var(--gold-solid);
-      outline: 1px solid rgba(252, 237, 197, 0.15);
-      outline-offset: -5px;
-      width: 100%;
-      max-width: 580px;
-      padding: 20px 25px;
-      box-shadow: 0 25px 60px rgba(0,0,0,0.95);
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .sign-header {
-      font-size: 1.25rem;
-      background: var(--gold-metallic);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-align: center;
-      border-bottom: 1px solid rgba(209, 158, 83, 0.3);
-      padding-bottom: 10px;
-      margin-bottom: 15px;
-      font-weight: 700;
-    }
-
-    /* ==========================================================================
-       🎲 SIC BO (大小) 実装コンポーネント用スタイル
-       ========================================================================== */
-    .sb-hud {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 580px;
-      background: rgba(0,0,0,0.6);
-      border: 1px solid rgba(209, 158, 83, 0.3);
-      padding: 10px 20px;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    .sb-hud span { font-weight: bold; color: #fff; }
-    .sb-hud .gold-val { color: var(--gold-bright); font-family: 'Cinzel', serif; }
-
-    .sb-dealer-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .sb-cup-container {
-      width: 120px;
-      height: 120px;
-      background: radial-gradient(circle, #3a0000 0%, #110000 100%);
-      border: 3px solid var(--gold-solid);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 0 20px #000, 0 10px 20px rgba(0,0,0,0.6);
-      position: relative;
-    }
-    .sb-dice-box {
-      display: flex;
-      gap: 10px;
-      z-index: 1;
-    }
-    .sb-dice {
-      width: 26px;
-      height: 26px;
-      background: #fff;
-      color: #000;
-      border-radius: 4px;
-      font-size: 1.2rem;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-    }
-    .sb-cup-lid {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #a6742a 0%, #d19e53 50%, #543a13 100%);
-      border-radius: 50%;
-      border: 2px solid #fff;
-      z-index: 2;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.8);
-    }
-    .sb-status-msg {
-      font-size: 0.9rem;
-      color: var(--gold-bright);
-      height: 20px;
-      font-weight: bold;
-    }
-
-    .sb-bet-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .sb-bet-cell {
-      background: rgba(20, 5, 5, 0.85);
-      border: 1px solid rgba(209, 158, 83, 0.4);
-      border-radius: 4px;
-      padding: 12px;
-      text-align: center;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.3s;
-    }
-    .sb-bet-cell:hover {
-      background: rgba(40, 10, 10, 0.95);
-    }
-    .sb-bet-cell.active-win {
-      background: rgba(157, 26, 26, 0.6) !important;
-      border-color: #fff;
-      box-shadow: 0 0 15px rgba(255,0,0,0.6);
-    }
-    .sb-cell-title { font-size: 0.9rem; font-weight: bold; color: #fff; }
-    .sb-cell-odds { font-size: 0.75rem; color: var(--gold-solid); margin-top: 2px; }
-    .sb-chip-spot {
-      margin-top: 6px;
-      min-height: 22px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .sb-placed-chip {
-      background: radial-gradient(circle, #ffd993 0%, #a6742a 100%);
-      color: #000;
-      font-size: 0.7rem;
-      font-weight: 900;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 1px dashed #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-
-    .sb-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 15px;
-      border-top: 1px solid rgba(209, 158, 83, 0.2);
-      padding-top: 15px;
-      gap: 10px;
-    }
-    .sb-chip-select {
-      display: flex;
-      gap: 8px;
-    }
-    .sb-chip-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: #222;
-      border: 2px solid var(--gold-solid);
-      color: var(--gold-bright);
-      font-weight: bold;
-      font-size: 0.75rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .sb-chip-btn.selected {
-      background: var(--gold-metallic);
-      color: #000;
-      border-color: #fff;
-      box-shadow: var(--gold-glow);
-    }
-    .sb-action-btns {
-      display: flex;
-      gap: 8px;
-    }
-    .sb-btn {
-      background: #111;
-      border: 1px solid var(--gold-solid);
-      color: #fff;
-      padding: 8px 16px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 2px;
-    }
-    .sb-btn-roll {
-      background: linear-gradient(to bottom, #9d1a1a, #5a0505);
-      border-color: #ffd993;
-    }
-
-    /* ==========================================================================
-       6. 🎬 アップグレード版シネマティック・エンドロール
-       ========================================================================== */
-    #credit-screen {
-      background: #000;
-      z-index: 200;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-    .credit-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .credit-roll {
-      position: absolute;
-      width: 90%;
-      max-width: 600px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 55px;
-    }
-    .credit-logo { margin-bottom: 40px; }
-    .credit-logo h2 {
-      font-size: 2.5rem;
-      background: var(--gold-metallic);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      line-height: 1.3;
-      filter: drop-shadow(0 0 30px rgba(209, 158, 83, 0.4));
-    }
-    .credit-subtitle { color: #555; font-size: 0.75rem; letter-spacing: 0.4em; margin-top: 15px; }
-    .credit-section { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .credit-title { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--gold-solid); letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.8; }
-    .credit-name { font-size: 1.5rem; font-weight: 500; color: #fff; letter-spacing: 0.15em; }
-    .special-credit-name { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 700; background: var(--gold-metallic); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.25em; filter: drop-shadow(var(--gold-glow)); }
-
-    /* ==========================================================================
-       7. ❄️ ホワイトアウト & Thank You 画面
-       ========================================================================== */
-    #thankyou-screen {
-      background: #ffffff;
-      z-index: 300;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-    }
-    .thankyou-wrap { text-align: center; padding: 20px; }
-    .thankyou-title { font-family: 'Cinzel', serif; font-size: 2.5rem; font-weight: 900; color: #111111; letter-spacing: 0.3em; line-height: 1.5; margin-bottom: 50px; }
-    .re-enter-btn { background: #111111; border: 1px solid #111111; color: #ffffff; padding: 16px 40px; font-size: 0.9rem; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; }
-    .re-enter-btn:hover { background: #ffffff; color: #111111; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transform: translateY(-2px); }
+    /* ブラックジャック & インディアンポーカー */
+    .card-display-area { display: flex; justify-content: space-around; margin-bottom: 20px; }
+    .card-slot { text-align: center; }
+    .card-title { font-size: 0.8rem; color: #8a735d; margin-bottom: 5px; }
+    .cards-row { display: flex; gap: 5px; min-height: 80px; justify-content: center; }
+    .casino-card { width: 55px; height: 80px; background: #fff; color: #000; border-radius: 4px; border: 1px solid #ccc; display: flex; flex-direction: column; justify-content: space-between; padding: 5px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+    .casino-card.red { color: #9d1a1a; }
+    .casino-card.back { background: linear-gradient(135deg, #5a0505, #110000); border-color: var(--gold-solid); color: transparent; }
+    .bj-bet-box { background: rgba(0,0,0,0.4); border: 1px solid rgba(209,158,83,0.3); border-radius: 4px; padding: 15px; text-align: center; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- ① オープニングシネマ -->
-  <div id="opening-screen" class="screen">
-    <div class="bg-roulette" id="main-roulette"></div>
-    <canvas id="particle-canvas"></canvas>
-    <div class="floating-suit" style="top: 15%; left: -10%;">♠</div>
-    <div class="floating-suit" style="top: 45%; right: -10%;">♥</div>
-    <div class="floating-suit" style="top: 75%; left: -10%;">♦</div>
-    <div class="op-title-wrap">
-      <div class="singularity" id="spark"></div>
-      <p class="pre-title cinema-text" id="pre-title-text">WELCOME TO THE GAME OF FATE</p>
-      <h1 class="main-slogan cinema-text" id="logo-text">BET OR NOT,<br>GET OR ROT.</h1>
-      <p class="sub-title cinema-text" id="sub-title-text">ONE BET. ONE CHOICE. ONE FATE.<br><span class="sub-title-suits">♥ ♦ ♠ ♣</span></p>
-    </div>
-    <div class="enter-trigger-wrap" id="btn-wrap">
-      <button class="btn-gold-3d cinema-text" onclick="openTheGates()">ENTER CASINO</button>
-    </div>
-  </div>
-
-  <!-- ② トランジション扉 -->
-  <div class="gate-container">
-    <div class="gate gate-left" id="gate-l"></div>
-    <div class="gate gate-right" id="gate-r"></div>
-  </div>
-
-  <!-- ③ ロビー -->
-  <main id="lobby-screen" class="screen">
-    <div class="lobby-wrap">
-      <header class="lobby-title-area"><h2 class="cinema-text">BET OR NOT,<br>GET OR ROT.</h2></header>
-      <div class="lobby-cards">
-        <div class="lobby-card" style="opacity:0.4; cursor:not-allowed;">
-          <div class="card-icon">♠</div>
-          <div class="card-name cinema-text">BLACKJACK</div>
-        </div>
-        <div class="lobby-card" style="opacity:0.4; cursor:not-allowed;">
-          <div class="card-icon">🃏</div>
-          <div class="card-name cinema-text">INDIAN POKER</div>
-        </div>
-        <!-- 🎲 SIC BO のみ有効化 -->
-        <div class="lobby-card" onclick="goToGame('sicbo-screen', 'dice')">
-          <div class="card-icon">🎲</div>
-          <div class="card-name cinema-text">SIC BO</div>
-        </div>
+  <!-- メインロビー -->
+  <div id="lobby-screen" class="lobby-wrap">
+    <h1 class="lobby-title cinema-text">VIP CASINO CLUB</h1>
+    <div class="lobby-cards">
+      <div class="lobby-card" onclick="openGame('sicbo-screen')">
+        <div class="card-icon">🎲</div>
+        <div class="card-name cinema-text">SIC BO</div>
       </div>
-      <button class="exit-btn cinema-text" onclick="showCredits()">EXIT</button>
-      <p class="lobby-footer-tip cinema-text">— MEMBERS ONLY —</p>
+      <div class="lobby-card" onclick="openGame('bj-screen')">
+        <div class="card-icon">♠</div>
+        <div class="card-name cinema-text">BLACKJACK</div>
+      </div>
+      <div class="lobby-card" onclick="openGame('ip-screen')">
+        <div class="card-icon">🃏</div>
+        <div class="card-name cinema-text">INDIAN POKER</div>
+      </div>
     </div>
-  </main>
+  </div>
 
-  <!-- ⑥ SIC BO ゲーム実装画面 -->
-  <section id="sicbo-screen" class="screen">
+  <!-- 1. SIC BO (大小) -->
+  <div id="sicbo-screen" class="screen">
     <div class="table-rim"></div>
-    <button class="exit-btn cinema-text" onclick="backToLobby('sicbo-screen')">LOBBY</button>
-
+    <button class="exit-btn" onclick="backToLobby()">LOBBY</button>
     <div class="game-content">
-      <!-- HUD 情報 -->
-      <div class="sb-hud">
-        <div>VAL: <span id="sb-wallet" class="gold-val">1000</span></div>
-        <div>TOTAL BET: <span id="sb-total-bet">0</span></div>
+      <div class="hud-bar">
+        <div>CREDIT: <span class="gold-val wallet-lbl">1000</span></div>
+        <div>TOTAL BET: <span id="sb-bet-total">0</span></div>
       </div>
-
-      <!-- ディーラー・カップ演出エリア -->
-      <div class="sb-dealer-area">
-        <div class="sb-cup-container">
-          <div class="sb-cup-lid" id="sb-cup-lid"></div>
-          <div class="sb-dice-box">
-            <div class="sb-dice" id="sb-dice-1">?</div>
-            <div class="sb-dice" id="sb-dice-2">?</div>
-            <div class="sb-dice" id="sb-dice-3">?</div>
+      <div class="table-board">
+        <div class="cup-area">
+          <div class="dice-visual" id="sb-d1">?</div>
+          <div class="dice-visual" id="sb-d2">?</div>
+          <div class="dice-visual" id="sb-d3">?</div>
+        </div>
+        <div class="status-msg" id="sb-msg">PLACE YOUR BETS</div>
+        <div class="sb-grid">
+          <div class="sb-cell" id="sb-cell-small" onclick="sbPlace('small')">
+            <div>小 (4-10) 1:1</div>
+            <div class="chip-pot" id="sb-pot-small"></div>
+          </div>
+          <div class="sb-cell" id="sb-cell-big" onclick="sbPlace('big')">
+            <div>大 (11-17) 1:1</div>
+            <div class="chip-pot" id="sb-pot-big"></div>
           </div>
         </div>
-        <div class="sb-status-msg" id="sb-status-msg">PLACE YOUR BETS</div>
-      </div>
-
-      <!-- ベットボードボード -->
-      <div class="signboard">
-        <div class="sb-bet-grid">
-          <!-- 小 (Small) -->
-          <div class="sb-bet-cell" onclick="placeBet('small')">
-            <div class="sb-cell-title">小 (Small)</div>
-            <div class="sb-cell-odds">4-10 / 1 : 1</div>
-            <div class="sb-chip-spot" id="chip-small"></div>
+        <div class="ctrl-row">
+          <div class="chip-selector">
+            <button class="chip-btn selected" onclick="setChip(10, this)">10</button>
+            <button class="chip-btn" onclick="setChip(50, this)">50</button>
+            <button class="chip-btn" onclick="setChip(100, this)">100</button>
           </div>
-          <!-- 大 (Big) -->
-          <div class="sb-bet-cell" onclick="placeBet('big')">
-            <div class="sb-cell-title">大 (Big)</div>
-            <div class="sb-cell-odds">11-17 / 1 : 1</div>
-            <div class="sb-chip-spot" id="chip-big"></div>
-          </div>
-          <!-- 任意のゾロ目 -->
-          <div class="sb-bet-cell" onclick="placeBet('anyTriple')">
-            <div class="sb-cell-title">任意のゾロ目</div>
-            <div class="sb-cell-odds">Triple / 1 : 30</div>
-            <div class="sb-chip-spot" id="chip-anyTriple"></div>
-          </div>
-          <!-- 特定のゾロ目 (1) -->
-          <div class="sb-bet-cell" onclick="placeBet('triple1')">
-            <div class="sb-cell-title">特定のゾロ目 [1-1-1]</div>
-            <div class="sb-cell-odds">1:180</div>
-            <div class="sb-chip-spot" id="chip-triple1"></div>
+          <div class="action-group">
+            <button class="btn-action" onclick="sbClear()">CLEAR</button>
+            <button class="btn-action btn-main" onclick="sbRoll()">ROLL</button>
           </div>
         </div>
-
-        <!-- 操作パネル -->
-        <div class="sb-controls">
-          <div class="sb-chip-select">
-            <button class="sb-chip-btn selected" onclick="selectChip(10, this)">10</button>
-            <button class="sb-chip-btn" onclick="selectChip(50, this)">50</button>
-            <button class="sb-chip-btn" onclick="selectChip(100, this)">100</button>
-          </div>
-          <div class="sb-action-btns">
-            <button class="sb-btn" onclick="clearBets()">CLEAR</button>
-            <button class="sb-btn sb-btn-roll" onclick="rollDice()">ROLL</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ⑦ エンドロール -->
-  <div id="credit-screen" class="screen">
-    <div class="credit-container">
-      <div class="credit-roll" id="roll-inner">
-        <div class="credit-logo">
-          <h2 class="cinema-text">BET OR NOT,<br>GET OR ROT.</h2>
-          <p class="credit-subtitle">A CASINO SPEAKEASY EXPERIMENT</p>
-        </div>
-        <div class="credit-section"><p class="credit-title">EXECUTIVE PRODUCER / DIRECTOR</p><p class="special-credit-name">LUCA</p></div>
-        <div class="credit-section"><p class="credit-title">DESIGNER</p><p class="credit-name">AGARI</p></div>
-        <div class="credit-section"><p class="credit-title">VISUAL EFFECTS</p><p class="credit-name">GSAP SYSTEM</p></div>
-        <div class="credit-section"><p class="credit-title">CREATED BY</p><p class="credit-name">CLASS 101</p></div>
       </div>
     </div>
   </div>
 
-  <!-- ⑧ ❄️ ホワイトアウト & Thank You 画面 -->
-  <div id="thankyou-screen" class="screen">
-    <div class="thankyou-wrap">
-      <h2 class="thankyou-title cinema-text">THANK YOU FOR PLAYING</h2>
-      <button class="re-enter-btn cinema-text" onclick="resetOpening()">RETURN TO GATE</button>
+  <!-- 2. BLACKJACK -->
+  <div id="bj-screen" class="screen">
+    <div class="table-rim"></div>
+    <button class="exit-btn" onclick="backToLobby()">LOBBY</button>
+    <div class="game-content">
+      <div class="hud-bar">
+        <div>CREDIT: <span class="gold-val wallet-lbl">1000</span></div>
+        <div>BET: <span id="bj-bet-lbl">0</span></div>
+      </div>
+      <div class="table-board">
+        <div class="card-display-area">
+          <div class="card-slot">
+            <div class="card-title">DEALER (<span id="bj-d-score">?</span>)</div>
+            <div class="cards-row" id="bj-dealer-cards"></div>
+          </div>
+          <div class="card-slot">
+            <div class="card-title">PLAYER (<span id="bj-p-score">0</span>)</div>
+            <div class="cards-row" id="bj-player-cards"></div>
+          </div>
+        </div>
+        <div class="status-msg" id="bj-msg">PLACE BET & DEAL</div>
+        <div class="bj-bet-box" id="bj-bet-zone" onclick="bjPlace()">
+          <div>BET HERE TO PLAY</div>
+          <div class="chip-pot" id="bj-pot"></div>
+        </div>
+        <div class="ctrl-row">
+          <div class="chip-selector">
+            <button class="chip-btn selected" onclick="setChip(10, this)">10</button>
+            <button class="chip-btn" onclick="setChip(50, this)">50</button>
+            <button class="chip-btn" onclick="setChip(100, this)">100</button>
+          </div>
+          <div class="action-group">
+            <button class="btn-action" id="btn-bj-hit" onclick="bjHit()" disabled>HIT</button>
+            <button class="btn-action" id="btn-bj-stand" onclick="bjStand()" disabled>STAND</button>
+            <button class="btn-action btn-main" id="btn-bj-deal" onclick="bjDeal()">DEAL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. INDIAN POKER -->
+  <div id="ip-screen" class="screen">
+    <div class="table-rim"></div>
+    <button class="exit-btn" onclick="backToLobby()">LOBBY</button>
+    <div class="game-content">
+      <div class="hud-bar">
+        <div>CREDIT: <span class="gold-val wallet-lbl">1000</span></div>
+        <div>BET: <span id="ip-bet-lbl">0</span></div>
+      </div>
+      <div class="table-board">
+        <div class="card-display-area">
+          <div class="card-slot">
+            <div class="card-title">OPPONENT CARD</div>
+            <div class="cards-row" id="ip-opp-cards"></div>
+          </div>
+          <div class="card-slot">
+            <div class="card-title">YOUR CARD (BLIND)</div>
+            <div class="cards-row" id="ip-my-cards"></div>
+          </div>
+        </div>
+        <div class="status-msg" id="ip-msg">BET OR FOLD. YOU SEE OPPONENT'S CARD.</div>
+        <div class="ctrl-row">
+          <div class="chip-selector">
+            <button class="chip-btn selected" onclick="setChip(10, this)">10</button>
+            <button class="chip-btn" onclick="setChip(50, this)">50</button>
+            <button class="chip-btn" onclick="setChip(100, this)">100</button>
+          </div>
+          <div class="action-group">
+            <button class="btn-action" id="btn-ip-fold" onclick="ipFold()" disabled>FOLD</button>
+            <button class="btn-action" id="btn-ip-raise" onclick="ipRaise()">RAISE BET</button>
+            <button class="btn-action btn-main" id="btn-ip-call" onclick="ipShowdown()" disabled>SEE</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
     // ==========================================================================
-    // A. リアルタイム・ループBGM & 効果音エンジン
+    // 共通システムコア
     // ==========================================================================
-    let audioCtx = null;
-    let bgmMasterGain = null;
-    let schedulerInterval = null;
-    let musicIsPlaying = false;
-    const bpm = 165;
-    const stepTime = 60 / bpm / 2;
-    let nextNoteTime = 0.0;
-    let currentStep = 0;
-    const totalSteps = 64;
+    let globalWallet = 1000;
+    let selectedChip = 10;
+    let activeScreen = "lobby-screen";
 
-    const chords = [
-      [60, 63, 67, 70], [60, 63, 67, 70], [58, 61, 65, 68], [58, 61, 65, 68],
-      [60, 63, 68, 72], [59, 62, 65, 68], [60, 63, 67, 70], [60, 63, 67, 70]
-    ];
-    const bassPatterns = [
-      36, 43, 41, 39, 36, 39, 41, 42, 43, 46, 45, 43, 41, 38, 36, 35,
-      36, 40, 41, 43, 45, 41, 43, 47, 48, 43, 41, 39, 38, 35, 36, 38
-    ];
-
-    const initAudio = () => {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        bgmMasterGain = audioCtx.createGain();
-        bgmMasterGain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-        bgmMasterGain.connect(audioCtx.destination);
-      }
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-    };
-
-    const playPianoChord = (notes, time, duration) => {
-      notes.forEach(midi => {
-        const osc1 = audioCtx.createOscillator();
-        const osc2 = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc1.type = 'triangle'; osc2.type = 'sine';
-        const freq = 440 * Math.pow(2, (midi - 69) / 12);
-        osc1.frequency.value = freq; osc2.frequency.value = freq * 2;
-        osc1.connect(gainNode); osc2.connect(gainNode);
-        gainNode.connect(bgmMasterGain);
-        gainNode.gain.setValueAtTime(0, time);
-        gainNode.gain.linearRampToValueAtTime(0.04, time + 0.02);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
-        osc1.start(time); osc2.start(time);
-        osc1.stop(time + duration + 0.1); osc2.stop(time + duration + 0.1);
-      });
-    };
-
-    const playBassNote = (midi, time, duration) => {
-      const osc = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(440 * Math.pow(2, (midi - 69) / 12), time);
-      osc.connect(gainNode); gainNode.connect(bgmMasterGain);
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(0.12, time + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, time + duration);
-      osc.start(time); osc.stop(time + duration + 0.1);
-    };
-
-    const playHihat = (time, isSlam = false) => {
-      const bufferSize = audioCtx.sampleRate * 0.05;
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-      const noise = audioCtx.createBufferSource(); noise.buffer = buffer;
-      const filter = audioCtx.createBiquadFilter(); filter.type = 'highpass';
-      filter.frequency.value = isSlam ? 8000 : 11000;
-      const gain = audioCtx.createGain();
-      gain.gain.setValueAtTime(isSlam ? 0.04 : 0.02, time);
-      gain.gain.exponentialRampToValueAtTime(0.001, time + (isSlam ? 0.04 : 0.02));
-      noise.connect(filter); filter.connect(gain); gain.connect(bgmMasterGain);
-      noise.start(time); noise.stop(time + 0.06);
-    };
-
-    const scheduleNextBeats = () => {
-      while (nextNoteTime < audioCtx.currentTime + 0.15) {
-        const bar = Math.floor(currentStep / 8) % 8;
-        const beatInBar = currentStep % 8;
-        if (beatInBar === 0 || beatInBar === 3 || beatInBar === 6) playPianoChord(chords[bar], nextNoteTime, stepTime * 1.8);
-        if (currentStep % 2 === 0) playBassNote(bassPatterns[Math.floor(currentStep / 2) % 32], nextNoteTime, stepTime * 1.8);
-        if (currentStep % 2 === 0) playHihat(nextNoteTime, true);
-        else if (currentStep % 4 === 1 || currentStep % 4 === 3) playHihat(nextNoteTime, false);
-        nextNoteTime += stepTime;
-        currentStep = (currentStep + 1) % totalSteps;
-      }
-    };
-
-    const startMusic = () => {
-      if (musicIsPlaying) return;
-      initAudio(); musicIsPlaying = true;
-      nextNoteTime = audioCtx.currentTime + 0.05; currentStep = 0;
-      bgmMasterGain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-      schedulerInterval = setInterval(scheduleNextBeats, 50);
-    };
-
-    const stopMusic = () => { if (schedulerInterval) clearInterval(schedulerInterval); musicIsPlaying = false; };
-    const playChipStack = () => {
-      if (!audioCtx) return; const now = audioCtx.currentTime;
-      const bOsc = audioCtx.createOscillator(); const cOsc = audioCtx.createOscillator(); const g = audioCtx.createGain();
-      bOsc.type = 'triangle'; bOsc.frequency.setValueAtTime(140, now); bOsc.frequency.exponentialRampToValueAtTime(80, now + 0.08);
-      cOsc.type = 'sine'; cOsc.frequency.setValueAtTime(2200, now); cOsc.frequency.exponentialRampToValueAtTime(1500, now + 0.02);
-      bOsc.connect(g); cOsc.connect(g); g.connect(audioCtx.destination);
-      bOsc.start(now); cOsc.start(now); g.gain.setValueAtTime(0.2, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-      bOsc.stop(now + 0.09); cOsc.stop(now + 0.09);
-    };
-
-    const playDiceCupShaker = () => {
-      if (!audioCtx) return; const now = audioCtx.currentTime;
-      for (let i = 0; i < 7; i++) {
-        const delay = i * 0.06; const osc = audioCtx.createOscillator(); const g = audioCtx.createGain();
-        osc.type = 'triangle'; osc.frequency.setValueAtTime(120 + Math.random() * 90, now + delay);
-        osc.connect(g); g.connect(audioCtx.destination); osc.start(now + delay);
-        g.gain.setValueAtTime(0.12 * (1 - i * 0.12), now + delay); g.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.04);
-        osc.stop(now + delay + 0.05);
-      }
-    };
-
-    const playJackpotChime = () => {
-      if (!audioCtx) return; const now = audioCtx.currentTime;
-      const pentatonic = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
-      pentatonic.forEach((freq, idx) => {
-        const osc = audioCtx.createOscillator(); const g = audioCtx.createGain(); osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, now + (idx * 0.08)); osc.connect(g); g.connect(audioCtx.destination);
-        osc.start(now + (idx * 0.08)); g.gain.setValueAtTime(0.06, now + (idx * 0.08));
-        g.gain.exponentialRampToValueAtTime(0.001, now + (idx * 0.08) + 0.4); osc.stop(now + (idx * 0.08) + 0.42);
-      });
-    };
-
-    // ==========================================================================
-    // B. ゴールド・パーティクルシステム
-    // ==========================================================================
-    const canvas = document.getElementById('particle-canvas'); const ctx = canvas.getContext('2d');
-    let particles = []; let sparks = [];
-    const resizeCanvas = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-    window.addEventListener('resize', resizeCanvas); resizeCanvas();
-
-    class GoldParticle {
-      constructor() { this.reset(); }
-      reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.size = Math.random() * 2 + 1; this.speedY = Math.random() * 0.4 + 0.2; this.speedX = Math.random() * 0.4 - 0.2; this.alpha = Math.random() * 0.5 + 0.2; }
-      update() { this.y += this.speedY; this.x += this.speedX; if (this.y > canvas.height) { this.y = -10; this.x = Math.random() * canvas.width; } }
-      draw() { ctx.fillStyle = `rgba(252, 213, 140, ${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+    function updateAllWalletLables() {
+      document.querySelectorAll('.wallet-lbl').forEach(el => el.innerText = globalWallet);
     }
-    class Spark {
-      constructor() { this.reset(); }
-      reset() { this.x = Math.random() * canvas.width; this.y = -20; this.length = Math.random() * 80 + 40; this.speedY = Math.random() * 4 + 3; this.speedX = (Math.random() * 3 + 2) * (Math.random() > 0.5 ? 1 : -1); this.width = Math.random() * 1.5 + 0.5; this.alpha = Math.random() * 0.6 + 0.4; }
-      update() { this.x += this.speedX; this.y += this.speedY; if (this.y > canvas.height || this.x < -100 || this.x > canvas.width + 100) this.reset(); }
-      draw() { ctx.strokeStyle = `rgba(255, 215, 0, ${this.alpha})`; ctx.lineWidth = this.width; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x - this.speedX * 3, this.y - this.speedY * 3); ctx.stroke(); }
+    function setChip(val, btn) {
+      selectedChip = val;
+      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
     }
-    for (let i = 0; i < 50; i++) particles.push(new GoldParticle());
-    for (let i = 0; i < 6; i++) sparks.push(new Spark());
-    const animateParticles = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => { p.update(); p.draw(); });
-      sparks.forEach(s => { s.update(); s.draw(); });
-      requestAnimationFrame(animateParticles);
-    };
-    animateParticles();
-
-    // ==========================================================================
-    // C. 画面遷移アニメーション
-    // ==========================================================================
-    window.addEventListener('DOMContentLoaded', () => {
-      gsap.to("#main-roulette", { rotate: 360, duration: 65, repeat: -1, ease: "none" });
-      gsap.to(".floating-suit", { x: '110vw', y: 'random(-50, 50)', rotate: 'random(-180, 180)', duration: 10, stagger: 2.5, repeat: -1, ease: "none" });
-      gsap.timeline()
-        .to("#spark", { scale: 3, opacity: 1, duration: 1.5, delay: 0.5, ease: "power4.out" })
-        .to("#spark", { scale: 0, opacity: 0, duration: 0.8, ease: "power4.in" })
-        .to("#pre-title-text", { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" }, "-=0.2")
-        .to("#logo-text", { opacity: 1, duration: 2.2, ease: "power3.out" }, "-=0.6")
-        .to("#sub-title-text", { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }, "-=0.8")
-        .to("#btn-wrap", { opacity: 1, y: 0, duration: 1.5, ease: "power3.out" }, "-=1.0")
-        .add(() => { gsap.to("#btn-wrap", { opacity: 0.8, duration: 1.5, yoyo: true, repeat: -1, ease: "sine.inOut" }); });
-    });
-
-    const openTheGates = () => {
-      initAudio(); startMusic(); playJackpotChime();
-      const gateL = document.getElementById('gate-l'); const gateR = document.getElementById('gate-r');
-      gsap.timeline()
-        .to("#opening-screen", { opacity: 0, duration: 0.8, ease: "power2.inOut" })
-        .to(gateL, { left: '0%', duration: 0.5, ease: "power3.out" }, "-=0.5")
-        .to(gateR, { right: '0%', duration: 0.5, ease: "power3.out" }, "-=0.5")
-        .add(() => { document.getElementById('opening-screen').style.display = 'none'; document.getElementById('lobby-screen').style.display = 'block'; })
-        .to(gateL, { left: '-50%', duration: 1.6, ease: "power3.inOut", delay: 0.2 })
-        .to(gateR, { right: '-50%', duration: 1.6, ease: "power3.inOut" }, "-=1.6");
-    };
-
-    const goToGame = (screenId, sfxType) => {
-      if (sfxType === 'dice') playDiceCupShaker(); else playChipStack();
-      const gateL = document.getElementById('gate-l'); const gateR = document.getElementById('gate-r');
-      gsap.timeline()
-        .to(gateL, { left: '0%', duration: 0.6, ease: "power3.inOut" })
-        .to(gateR, { right: '0%', duration: 0.6, ease: "power3.inOut" }, "-=0.6")
-        .add(() => { document.getElementById('lobby-screen').style.display = 'none'; document.getElementById(screenId).style.display = 'block'; })
-        .to(gateL, { left: '-50%', duration: 1.2, ease: "power3.inOut", delay: 0.15 })
-        .to(gateR, { right: '-50%', duration: 1.2, ease: "power3.inOut" }, "-=1.2");
-    };
-
-    const backToLobby = (currentId) => {
-      playChipStack();
-      const gateL = document.getElementById('gate-l'); const gateR = document.getElementById('gate-r');
-      gsap.timeline()
-        .to(gateL, { left: '0%', duration: 0.6, ease: "power3.inOut" })
-        .to(gateR, { right: '0%', duration: 0.6, ease: "power3.inOut" }, "-=0.6")
-        .add(() => { document.getElementById(currentId).style.display = 'none'; document.getElementById('lobby-screen').style.display = 'block'; })
-        .to(gateL, { left: '-50%', duration: 1.2, ease: "power3.inOut", delay: 0.15 })
-        .to(gateR, { right: '-50%', duration: 1.2, ease: "power3.inOut" }, "-=1.2");
-    };
-
-    // ==========================================================================
-    // 🎲 SIC BO (大小) コアロジックゲームエンジン
-    // ==========================================================================
-    let wallet = 1000;
-    let currentSelectedChip = 10;
-    let currentBets = { small: 0, big: 0, anyTriple: 0, triple1: 0 };
-    let isRolling = false;
-
-    const selectChip = (value, element) => {
-      playChipStack();
-      currentSelectedChip = value;
-      document.querySelectorAll('.sb-chip-btn').forEach(btn => btn.classList.remove('selected'));
-      element.classList.add('selected');
-    };
-
-    const updateHUD = () => {
-      document.getElementById('sb-wallet').innerText = wallet;
-      let total = Object.values(currentBets).reduce((a, b) => a + b, 0);
-      document.getElementById('sb-total-bet').innerText = total;
-    };
-
-    const placeBet = (area) => {
-      if (isRolling) return;
-      if (wallet < currentSelectedChip) {
-        document.getElementById('sb-status-msg').innerText = "NOT ENOUGH CHIPS";
-        return;
-      }
-      playChipStack();
-      wallet -= currentSelectedChip;
-      currentBets[area] += currentSelectedChip;
-      updateHUD();
-      renderChips();
-    };
-
-    const renderChips = () => {
-      Object.keys(currentBets).forEach(area => {
-        const spot = document.getElementById(`chip-${area}`);
-        if (currentBets[area] > 0) {
-          spot.innerHTML = `<div class="sb-placed-chip">${currentBets[area]}</div>`;
-        } else {
-          spot.innerHTML = '';
-        }
-      });
-    };
-
-    const clearBets = () => {
-      if (isRolling) return;
-      playChipStack();
-      Object.keys(currentBets).forEach(area => {
-        wallet += currentBets[area];
-        currentBets[area] = 0;
-      });
-      updateHUD();
-      renderChips();
-      document.getElementById('sb-status-msg').innerText = "BETS CLEARED";
-    };
-
-    const rollDice = () => {
-      let totalBet = Object.values(currentBets).reduce((a, b) => a + b, 0);
-      if (totalBet === 0 || isRolling) return;
-
-      isRolling = true;
-      document.getElementById('sb-status-msg').innerText = "SHAKING...";
-      document.querySelectorAll('.sb-bet-cell').forEach(c => c.classList.remove('active-win'));
-      
-      // カップを閉じてシェイク音
-      gsap.to("#sb-cup-lid", { top: "0px", duration: 0.2 });
-      playDiceCupShaker();
-
-      // シャッフルアニメーション
-      let shakeTl = gsap.timeline({ repeat: 5, yoyo: true });
-      shakeTl.to(".sb-cup-container", { x: 10, y: -5, duration: 0.05 })
-             .to(".sb-cup-container", { x: -10, y: 5, duration: 0.05 });
-
-      setTimeout(() => {
-        // ダイス決定
-        let d1 = Math.floor(Math.random() * 6) + 1;
-        let d2 = Math.floor(Math.random() * 6) + 1;
-        let d3 = Math.floor(Math.random() * 6) + 1;
-        let sum = d1 + d2 + d3;
-        let isTriple = (d1 === d2 && d2 === d3);
-
-        // カップを開く
-        gsap.to("#sb-cup-lid", { top: "-140px", duration: 0.4, ease: "power2.out", onComplete: () => {
-          document.getElementById('sb-dice-1').innerText = d1;
-          document.getElementById('sb-dice-2').innerText = d2;
-          document.getElementById('sb-dice-3').innerText = d3;
-          judgeGame(d1, d2, d3, sum, isTriple);
-        }});
-      }, 800);
-    };
-
-    const judgeGame = (d1, d2, d3, sum, isTriple) => {
-      let wins = [];
-      let payout = 0;
-
-      // 条件判定
-      if (!isTriple) {
-        if (sum >= 4 && sum <= 10) wins.push('small');
-        if (sum >= 11 && sum <= 17) wins.push('big');
-      } else {
-        wins.push('anyTriple');
-        if (d1 === 1) wins.push('triple1');
-      }
-
-      // 配当計算
-      wins.forEach(winArea => {
-        if (currentBets[winArea] > 0) {
-          document.getElementById(`sb-bet-cell-${winArea}`)?.classList.add('active-win'); // セル発光用
-          let odds = 1;
-          if (winArea === 'anyTriple') odds = 30;
-          if (winArea === 'triple1') odds = 180;
-          // 返却される元金 + 利益
-          payout += currentBets[winArea] + (currentBets[winArea] * odds);
-        }
-      });
-
-      // 状態反映
-      wallet += payout;
-      if (payout > 0) {
-        playJackpotChime();
-        document.getElementById('sb-status-msg').innerText = `WIN: +${payout} (SUM: ${sum})`;
-      } else {
-        document.getElementById('sb-status-msg').innerText = `HOUSE WINS (SUM: ${sum})`;
-      }
-
-      // ベット初期化
-      Object.keys(currentBets).forEach(a => currentBets[a] = 0);
-      updateHUD();
-      renderChips();
-      isRolling = false;
-    };
-
-    // 各ベットセルにIDを追加割り当て
-    document.addEventListener("DOMContentLoaded", () => {
-      const cells = document.querySelectorAll('.sb-bet-cell');
-      const areas = ['small', 'big', 'anyTriple', 'triple1'];
-      cells.forEach((cell, idx) => { if (areas[idx]) cell.id = `sb-bet-cell-${areas[idx]}`; });
-    });
-
-    // ==========================================================================
-    // D. エンドロール & クレジット
-    // ==========================================================================
-    const showCredits = () => {
-      playChipStack();
+    function openGame(id) {
       document.getElementById('lobby-screen').style.display = 'none';
-      document.getElementById('credit-screen').style.display = 'flex';
-      const rollInner = document.getElementById('roll-inner');
-      gsap.set(rollInner, { y: window.innerHeight });
+      document.getElementById(id).style.display = 'block';
+      activeScreen = id;
+      updateAllWalletLables();
+      if(id==='bj-screen') bjReset();
+      if(id==='ip-screen') ipReset();
+    }
+    function backToLobby() {
+      document.getElementById(activeScreen).style.display = 'none';
+      document.getElementById('lobby-screen').style.display = 'flex';
+      activeScreen = "lobby-screen";
+    }
 
-      if (bgmMasterGain) gsap.to(bgmMasterGain.gain, { value: 0, duration: 10 });
+    // トランプ生成ユーティリティ
+    const suits = ['♠','♥','♦','♣'];
+    const suitsRed = {'♠':false,'♥':true,'♦':true,'♣':false};
+    function createDeck() {
+      let deck = [];
+      for(let s of suits) {
+        for(let v=1; v<=13; v++) deck.push({suit:s, val:v});
+      }
+      return deck.sort(() => Math.random() - 0.5);
+    }
+    function makeCardHTML(card, isBack=false) {
+      if(isBack) return `<div class="casino-card back">?</div>`;
+      let displayV = card.val === 1 ? 'A' : card.val === 11 ? 'J' : card.val === 12 ? 'Q' : card.val === 13 ? 'K' : card.val;
+      let redClass = suitsRed[card.suit] ? 'red' : '';
+      return `<div class="casino-card ${redClass}"><div>${displayV}</div><div style="align-self:flex-end;">${card.suit}</div></div>`;
+    }
 
-      const totalHeight = rollInner.offsetHeight;
-      gsap.to(rollInner, {
-        y: -totalHeight - 100,
-        duration: totalHeight * 0.025,
-        ease: "none",
-        force3D: true,
-        onComplete: () => { fadeOutToWhite(); }
-      });
-    };
+    // ==========================================================================
+    // 1. SIC BO (大小) ロジック
+    // ==========================================================================
+    let sbBets = { small: 0, big: 0 };
+    let sbLock = false;
 
-    const fadeOutToWhite = () => {
-      stopMusic();
-      const thankyouScreen = document.getElementById('thankyou-screen');
-      thankyouScreen.style.display = 'flex';
-      gsap.timeline().to(thankyouScreen, { opacity: 1, duration: 2.5, ease: "power2.inOut" }).add(() => {
-        document.getElementById('credit-screen').style.display = 'none';
-        playJackpotChime(); 
-      });
-    };
+    function sbPlace(area) {
+      if(sbLock) return;
+      if(globalWallet < selectedChip) return;
+      globalWallet -= selectedChip;
+      sbBets[area] += selectedChip;
+      document.getElementById(`sb-pot-${area}`).innerHTML = `<div class="placed-chip">${sbBets[area]}</div>`;
+      document.getElementById('sb-bet-total').innerText = sbBets.small + sbBets.big;
+      updateAllWalletLables();
+    }
+    function sbClear() {
+      if(sbLock) return;
+      globalWallet += (sbBets.small + sbBets.big);
+      sbBets = { small: 0, big: 0 };
+      document.getElementById('sb-pot-small').innerHTML = '';
+      document.getElementById('sb-pot-big').innerHTML = '';
+      document.getElementById('sb-bet-total').innerText = 0;
+      updateAllWalletLables();
+    }
+    function sbRoll() {
+      if(sbLock || (sbBets.small + sbBets.big === 0)) return;
+      sbLock = true;
+      document.getElementById('sb-msg').innerText = "SHAKING DICE...";
+      document.querySelectorAll('.sb-cell').forEach(c => c.classList.remove('win'));
 
-    const resetOpening = () => {
-      const thankyouScreen = document.getElementById('thankyou-screen');
-      gsap.timeline().to(thankyouScreen, { opacity: 0, duration: 1.0, ease: "power2.inOut" }).add(() => {
-        thankyouScreen.style.display = 'none';
-        document.getElementById('opening-screen').style.display = 'block';
-        gsap.set('#opening-screen', { opacity: 1 });
-        gsap.set(['#gate-l', '#gate-r'], { left: '-50%', right: '-50%' });
-        gsap.set("#pre-title-text", { opacity: 0, y: -10 });
-        gsap.set("#logo-text", { opacity: 0 });
-        gsap.set("#sub-title-text", { opacity: 0, y: 10 });
-        gsap.set("#btn-wrap", { opacity: 0 });
-        
-        gsap.timeline()
-          .to("#pre-title-text", { opacity: 1, y: 0, duration: 1.0, ease: "power3.out" })
-          .to("#logo-text", { opacity: 1, duration: 1.8, ease: "power3.out" }, "-=0.4")
-          .to("#sub-title-text", { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" }, "-=0.6")
-          .to("#btn-wrap", { opacity: 1, duration: 1.0, ease: "power3.out" }, "-=0.8");
-      });
-    };
+      let count = 0;
+      let interval = setInterval(() => {
+        document.getElementById('sb-d1').innerText = Math.floor(Math.random()*6)+1;
+        document.getElementById('sb-d2').innerText = Math.floor(Math.random()*6)+1;
+        document.getElementById('sb-d3').innerText = Math.floor(Math.random()*6)+1;
+        if(++count > 10) {
+          clearInterval(interval);
+          let d1 = Math.floor(Math.random()*6)+1, d2 = Math.floor(Math.random()*6)+1, d3 = Math.floor(Math.random()*6)+1;
+          document.getElementById('sb-d1').innerText = d1;
+          document.getElementById('sb-d2').innerText = d2;
+          document.getElementById('sb-d3').innerText = d3;
+          
+          let sum = d1 + d2 + d3;
+          let isTriple = (d1 === d2 && d2 === d3);
+          let winArea = "";
+          if(!isTriple) {
+            if(sum >= 4 && sum <= 10) winArea = "small";
+            if(sum >= 11 && sum <= 17) winArea = "big";
+          }
+
+          let payout = 0;
+          if(winArea) {
+            document.getElementById(`sb-cell-${winArea}`).classList.add('win');
+            if(sbBets[winArea] > 0) payout = sbBets[winArea] * 2;
+          }
+
+          globalWallet += payout;
+          document.getElementById('sb-msg').innerText = winArea ? `RESULT: ${sum} [${winArea.toUpperCase()}] WIN +${payout}` : `RESULT: ${sum} [TRIPLE] HOUSE WINS`;
+          sbBets = { small: 0, big: 0 };
+          document.getElementById('sb-pot-small').innerHTML = '';
+          document.getElementById('sb-pot-big').innerHTML = '';
+          document.getElementById('sb-bet-total').innerText = 0;
+          updateAllWalletLables();
+          sbLock = false;
+        }
+      }, 60);
+    }
+
+    // ==========================================================================
+    // 2. BLACKJACK ロジック
+    // ==========================================================================
+    let bjDeck, bjPlayer, bjDealer, bjBet = 0, bjState = "betting";
+
+    function bjReset() {
+      bjBet = 0; bjState = "betting";
+      document.getElementById('bj-pot').innerHTML = '';
+      document.getElementById('bj-bet-lbl').innerText = 0;
+      document.getElementById('bj-dealer-cards').innerHTML = '';
+      document.getElementById('bj-player-cards').innerHTML = '';
+      document.getElementById('bj-d-score').innerText = '?';
+      document.getElementById('bj-p-score').innerText = 0;
+      document.getElementById('bj-msg').innerText = "PLACE BET & DEAL";
+      document.getElementById('btn-bj-deal').disabled = false;
+      document.getElementById('btn-bj-hit').disabled = true;
+      document.getElementById('btn-bj-stand').disabled = true;
+    }
+    function bjPlace() {
+      if(bjState !== "betting" || globalWallet < selectedChip) return;
+      globalWallet -= selectedChip; bjBet += selectedChip;
+      document.getElementById('bj-pot').innerHTML = `<div class="placed-chip">${bjBet}</div>`;
+      document.getElementById('bj-bet-lbl').innerText = bjBet;
+      updateAllWalletLables();
+    }
+    function getBjScore(hand) {
+      let score = 0, aces = 0;
+      for(let c of hand) {
+        let v = c.val;
+        if(v > 10) score += 10;
+        else if(v === 1) { score += 11; aces++; }
+        else score += v;
+      }
+      while(score > 21 && aces > 0) { score -= 10; aces--; }
+      return score;
+    }
+    function bjDeal() {
+      if(bjBet === 0 || bjState !== "betting") return;
+      bjState = "playing";
+      bjDeck = createDeck();
+      bjPlayer = [bjDeck.pop(), bjDeck.pop()];
+      bjDealer = [bjDeck.pop(), bjDeck.pop()];
+
+      document.getElementById('btn-bj-deal').disabled = true;
+      document.getElementById('btn-bj-hit').disabled = false;
+      document.getElementById('btn-bj-stand').disabled = false;
+      document.getElementById('bj-msg').innerText = "HIT OR STAND?";
+
+      renderBj();
+    }
+    function renderBj(showDealer = false) {
+      document.getElementById('bj-player-cards').innerHTML = bjPlayer.map(c => makeCardHTML(c)).join('');
+      document.getElementById('bj-p-score').innerText = getBjScore(bjPlayer);
+      if(showDealer) {
+        document.getElementById('bj-dealer-cards').innerHTML = bjDealer.map(c => makeCardHTML(c)).join('');
+        document.getElementById('bj-d-score').innerText = getBjScore(bjDealer);
+      } else {
+        document.getElementById('bj-dealer-cards').innerHTML = makeCardHTML(bjDealer[0]) + makeCardHTML(null, true);
+        let firstV = bjDealer[0].val > 10 ? 10 : bjDealer[0].val === 1 ? 11 : bjDealer[0].val;
+        document.getElementById('bj-d-score').innerText = firstV;
+      }
+    }
+    function bjHit() {
+      bjPlayer.push(bjDeck.pop());
+      renderBj();
+      if(getBjScore(bjPlayer) > 21) bjEnd("BUST! YOU LOSE.");
+    }
+    function bjStand() {
+      renderBj(true);
+      let dScore = getBjScore(bjDealer);
+      let interval = setInterval(() => {
+        if(dScore < 17) {
+          bjDealer.push(bjDeck.pop());
+          renderBj(true);
+          dScore = getBjScore(bjDealer);
+        } else {
+          clearInterval(interval);
+          let pScore = getBjScore(bjPlayer);
+          if(dScore > 21) bjEnd("DEALER BUST! YOU WIN.", 2);
+          else if(pScore > dScore) bjEnd("YOU WIN.", 2);
+          else if(pScore < dScore) bjEnd("YOU LOSE.");
+          else bjEnd("PUSH (DRAW).", 1);
+        }
+      }, 400);
+    }
+    function bjEnd(msg, multiplier = 0) {
+      document.getElementById('bj-msg').innerText = msg;
+      globalWallet += bjBet * multiplier;
+      updateAllWalletLables();
+      document.getElementById('btn-bj-hit').disabled = true;
+      document.getElementById('btn-bj-stand').disabled = true;
+      setTimeout(bjReset, 2500);
+    }
+
+    // ==========================================================================
+    // 3. INDIAN POKER ロジック
+    // ==========================================================================
+    let ipDeck, ipMyCard, ipOppCard, ipBet = 0, ipState = "betting";
+
+    function ipReset() {
+      ipBet = 0; ipState = "betting";
+      document.getElementById('ip-bet-lbl').innerText = 0;
+      document.getElementById('ip-opp-cards').innerHTML = '';
+      document.getElementById('ip-my-cards').innerHTML = '';
+      document.getElementById('ip-msg').innerText = "RAISE BET TO START. (A:Weak - K:Strong)";
+      document.getElementById('btn-ip-fold').disabled = true;
+      document.getElementById('btn-ip-call').disabled = true;
+      document.getElementById('btn-ip-raise').disabled = false;
+    }
+    function ipRaise() {
+      if(globalWallet < selectedChip || (ipState !== "betting" && ipState !== "playing")) return;
+      globalWallet -= selectedChip; ipBet += selectedChip;
+      document.getElementById('ip-bet-lbl').innerText = ipBet;
+      updateAllWalletLables();
+
+      if(ipState === "betting") {
+        ipState = "playing";
+        ipDeck = createDeck();
+        ipMyCard = ipDeck.pop();
+        ipOppCard = ipDeck.pop();
+        document.getElementById('ip-opp-cards').innerHTML = makeCardHTML(ipOppCard);
+        document.getElementById('ip-my-cards').innerHTML = makeCardHTML(null, true);
+        document.getElementById('btn-ip-fold').disabled = false;
+        document.getElementById('btn-ip-call').disabled = false;
+        document.getElementById('ip-msg').innerText = "YOU SEE OPPONENT'S CARD. CHOOSE ACTION.";
+      }
+    }
+    function ipFold() {
+      document.getElementById('ip-my-cards').innerHTML = makeCardHTML(ipMyCard);
+      document.getElementById('ip-msg').innerText = `FOLDED. YOU SURRENDERED ${ipBet} CHIPS.`;
+      endIpGame(0);
+    }
+    function ipShowdown() {
+      document.getElementById('ip-my-cards').innerHTML = makeCardHTML(ipMyCard);
+      // インディアンポーカーは1(A)が最弱、13(K)が最強
+      if(ipMyCard.val > ipOppCard.val) {
+        document.getElementById('ip-msg').innerText = `WIN! YOUR CARD IS HIGHER. (+${ipBet * 2})`;
+        endIpGame(2);
+      } else if(ipMyCard.val < ipOppCard.val) {
+        document.getElementById('ip-msg').innerText = "LOSE... YOUR CARD IS LOWER.";
+        endIpGame(0);
+      } else {
+        document.getElementById('ip-msg').innerText = "DRAW (SPLIT POT).";
+        endIpGame(1);
+      }
+    }
+    function endIpGame(mult) {
+      globalWallet += ipBet * mult;
+      updateAllWalletLables();
+      document.getElementById('btn-ip-fold').disabled = true;
+      document.getElementById('btn-ip-call').disabled = true;
+      document.getElementById('btn-ip-raise').disabled = true;
+      setTimeout(ipReset, 3000);
+    }
   </script>
 </body>
 </html>
