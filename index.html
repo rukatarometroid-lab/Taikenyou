@@ -62,10 +62,10 @@
 
     /* ロビー */
     #lobby-screen { background: linear-gradient(135deg, #0e0b1e 0%, #04050a 100%); border-color: #111827; justify-content: center; }
-    .lobby-title { font-size: 3.5rem; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5), 0 4px 10px rgba(0,0,0,0.9); margin-bottom: 40px; text-align: center; }
-    .menu-buttons { display: flex; flex-direction: column; gap: 20px; width: 320px; }
+    .lobby-title { font-size: 3.2rem; color: var(--gold); text-shadow: 0 0 20px rgba(255,215,0,0.5), 0 4px 10px rgba(0,0,0,0.9); margin-bottom: 30px; text-align: center; }
+    .menu-buttons { display: flex; flex-direction: column; gap: 15px; width: 340px; }
     .menu-btn {
-      padding: 20px; font-size: 1.3rem; font-weight: bold; color: var(--text-dark); letter-spacing: 1px;
+      padding: 16px; font-size: 1.15rem; font-weight: bold; color: var(--text-dark); letter-spacing: 1px;
       background: linear-gradient(to bottom, var(--gold-bright) 0%, var(--gold) 50%, var(--gold-dark) 100%);
       border: 1px solid #fff; border-radius: 14px; cursor: pointer;
       box-shadow: 0 8px 16px rgba(0,0,0,0.5), inset 0 2px 4px #fff; transition: all 0.2s;
@@ -90,70 +90,69 @@
     .chip-100 { background: #065f46; }
     .chip-500 { background: #581c87; }
 
-    /* トランプ構造 */
-    .card-slots { display: flex; gap: 15px; justify-content: center; min-height: 145px; margin: 5px 0; }
+    /* トランプ構造（横1列・画面幅に収まるよう自動調整） */
+    .card-slots { 
+      display: flex; 
+      gap: 8px; 
+      justify-content: center; 
+      align-items: center;
+      min-height: 155px; 
+      margin: 5px 0; 
+      flex-wrap: nowrap;
+      width: 100%;
+      max-width: 100%;
+      padding: 5px 0;
+    }
     .card {
-      width: 102px; height: 148px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 8px; color: #0f172a;
+      width: 90px; 
+      max-width: 18vw; 
+      height: 130px; 
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 8px; color: #0f172a;
       position: relative; transition: all 0.3s; border: 1px solid #cbd5e1;
       box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+      flex-shrink: 1;
     }
+    .card.selectable { cursor: pointer; }
+    .card.selectable:hover { transform: translateY(-10px); box-shadow: 0 12px 20px rgba(255,215,0,0.6); border-color: var(--gold); }
+    .card.selected-for-exchange { transform: translateY(-15px); border: 2px solid #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
     .card.red { color: #e11d48; }
+    .card.joker { color: #7e22ce; background: linear-gradient(135deg, #fff 0%, #f3e8ff 100%); }
 
     /* インデックス（四隅の数字とスート） */
     .index-container {
-      position: absolute; width: 16px; display: flex; flex-direction: column; align-items: center; font-size: 0.95rem; font-weight: 900; line-height: 1.1;
+      position: absolute; width: 16px; display: flex; flex-direction: column; align-items: center; font-size: 0.85rem; font-weight: 900; line-height: 1.1;
     }
-    .index-container.top-left { top: 6px; left: 6px; }
-    .index-container.bottom-right { bottom: 6px; right: 6px; transform: rotate(180deg); }
-    .index-suit { font-size: 0.75rem; margin-top: 1px; }
+    .index-container.top-left { top: 4px; left: 4px; }
+    .index-container.bottom-right { bottom: 4px; right: 4px; transform: rotate(180deg); }
+    .index-suit { font-size: 0.7rem; margin-top: 1px; }
 
     /* 中央のスート・絵札描画エリア */
-    .card-center {
-      position: absolute; top: 14px; left: 16px; right: 16px; bottom: 14px;
-    }
+    .card-center { position: absolute; top: 12px; left: 12px; right: 12px; bottom: 12px; }
 
-    /* --- 【新設計】JQK用：伝統的な上下対称（ダブルヘッド）フレームスタイル --- */
+    /* JQK用フレームスタイル */
     .court-card-box {
       width: 100%; height: 100%; border: 1px solid #94a3b8; border-radius: 4px;
-      display: flex; flex-direction: column; overflow: hidden; position: relative;
-      background-color: #fff;
+      display: flex; flex-direction: column; overflow: hidden; position: relative; background-color: #fff;
     }
     .court-half {
       width: 100%; height: 50%; position: relative; display: flex; justify-content: center; align-items: center;
-      /* 伝統的なトランプの服の幾何学模様をグラデーションで構築 */
       background: 
         linear-gradient(45deg, rgba(30,58,138,0.1) 25%, transparent 25%) 0 0/10px 10px,
         linear-gradient(-45deg, rgba(185,28,28,0.1) 25%, transparent 25%) 0 0/10px 10px,
         linear-gradient(45deg, transparent 75%, rgba(234,179,8,0.1) 75%) 0 0/10px 10px;
     }
-    /* 下半分を180度完全反転して綺麗な対称に */
-    .court-half.bottom {
-      transform: rotate(180deg);
-      border-top: 1px dashed rgba(148,163,184,0.6);
-    }
-    /* 王宮のキャラクターアート */
-    .court-avatar {
-      font-size: 1.8rem; line-height: 1; z-index: 2; position: relative; top: 4px;
-    }
-    /* 背景のスート装飾（絵札の背景にある薄いマーク） */
-    .court-bg-suit {
-      position: absolute; font-size: 1.8rem; opacity: 0.08; font-weight: bold;
-      top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;
-    }
-    /* 横側の飾り枠線 */
-    .court-side-border {
-      position: absolute; top: 0; bottom: 0; width: 4px; background: var(--gold-dark); opacity: 0.4;
-    }
+    .court-half.bottom { transform: rotate(180deg); border-top: 1px dashed rgba(148,163,184,0.6); }
+    .court-avatar { font-size: 1.5rem; line-height: 1; z-index: 2; position: relative; top: 2px; }
+    .court-bg-suit { position: absolute; font-size: 1.5rem; opacity: 0.08; font-weight: bold; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
+    .court-side-border { position: absolute; top: 0; bottom: 0; width: 4px; background: var(--gold-dark); opacity: 0.4; }
     .court-side-border.left { left: 2px; }
     .court-side-border.right { right: 2px; }
 
-    /* エース（A）の超特大センター仕様 */
-    .ace-center {
-      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.8rem;
-    }
+    /* エース（A）/ ジョーカー */
+    .ace-center { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; }
 
     /* 数札（2〜10）の位置指定用共通スート */
-    .c-suit { position: absolute; font-size: 0.95rem; transform: translate(-50%, -50%); }
+    .c-suit { position: absolute; font-size: 0.85rem; transform: translate(-50%, -50%); }
     .c-suit.inv { transform: translate(-50%, -50%) rotate(180deg); }
 
     /* 裏面 */
@@ -207,6 +206,7 @@
     .btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none !important; box-shadow: none; }
     .btn-primary { background: linear-gradient(to bottom, var(--gold-bright), var(--gold)); border-color: var(--gold-dark); font-weight: 900; }
     .btn-danger { background: #ef4444; color: white; border-color: #991b1b; }
+    .btn-blue { background: #3b82f6; color: white; border-color: #1d4ed8; }
 
     /* シックボー */
     .sicbo-grid {
@@ -228,7 +228,7 @@
     }
 
     .area-layout { width: 100%; display: flex; flex-direction: column; justify-content: space-around; flex-grow: 1; }
-    .speech-bubble { background: #fff; color: #0f172a; padding: 10px 16px; border-radius: 14px; margin-top: 8px; font-size: 0.9rem; font-weight: bold; max-width: 240px; box-shadow: 0 6px 12px rgba(0,0,0,0.3); text-align: center; position: relative; }
+    .speech-bubble { background: #fff; color: #0f172a; padding: 10px 16px; border-radius: 14px; margin-top: 8px; font-size: 0.9rem; font-weight: bold; max-width: 280px; box-shadow: 0 6px 12px rgba(0,0,0,0.3); text-align: center; position: relative; }
   </style>
 </head>
 <body>
@@ -236,8 +236,10 @@
   <!-- ① ロビー画面 -->
   <section id="lobby-screen" class="screen active">
     <div><h1 class="lobby-title cinema-text">PREMIUM CASINO</h1></div>
-    <div class="top-info"><div>WALLET: $<span id="lobby-balance">1000</span></div></div>
+    <div class="top-info"><div>WALLET: $<span id="lobby-balance">500</span></div></div>
     <div class="menu-buttons">
+      <button class="menu-btn" onclick="switchScreen('babanuki-screen', initBabanuki)">BET ババ抜き (最終局面)</button>
+      <button class="menu-btn" onclick="switchScreen('poker-screen', initPoker)">BET ポーカー</button>
       <button class="menu-btn" onclick="switchScreen('bj-screen', initBJ)">BLACKJACK</button>
       <button class="menu-btn" onclick="switchScreen('indian-screen', initIndian)">INDIAN POKER</button>
       <button class="menu-btn" onclick="switchScreen('sicbo-screen', initSicbo)">SIC BO (大小)</button>
@@ -245,10 +247,77 @@
     <div></div>
   </section>
 
-  <!-- ② BLACKJACK -->
+  <!-- ② BET ババ抜き（最終局面） -->
+  <section id="babanuki-screen" class="screen">
+    <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
+    <div class="top-info"><div>WALLET: $<span id="babanuki-balance">500</span></div><div class="bet-display">BET: $<span id="babanuki-bet-total">0</span></div></div>
+    
+    <div class="area-layout">
+      <div style="text-align: center;">
+        <div style="font-weight: bold; margin-bottom: 5px;">DEALER HAND (1枚)</div>
+        <div id="babanuki-dealer-cards" class="card-slots"></div>
+      </div>
+      <div id="babanuki-status" class="status-msg">予想を選択してベットを行ってください</div>
+      <div style="text-align: center;">
+        <div id="babanuki-player-cards" class="card-slots"></div>
+        <div style="font-weight: bold; margin-top: 5px;">PLAYER HAND (2枚: Joker & A)</div>
+      </div>
+    </div>
+
+    <div class="chip-rack" id="babanuki-chips">
+      <div class="chip chip-10 selected" onclick="selectChip(10, this)">10</div>
+      <div class="chip chip-50" onclick="selectChip(50, this)">50</div>
+      <div class="chip chip-100" onclick="selectChip(100, this)">100</div>
+      <div class="chip chip-500" onclick="selectChip(500, this)">500</div>
+    </div>
+
+    <div class="controls">
+      <button id="baba-btn-win" class="btn btn-primary" onclick="setBabanukiPrediction('WIN')">予想: WIN (2倍)</button>
+      <button id="baba-btn-lose" class="btn btn-danger" onclick="setBabanukiPrediction('LOSE')">予想: LOSE (3倍)</button>
+      <button id="baba-btn-deal" class="btn btn-primary" onclick="babanukiStart()" disabled>ディール</button>
+      <button id="baba-btn-clear" class="btn" onclick="babanukiClearBet()">クリア</button>
+    </div>
+  </section>
+
+  <!-- ③ BET ポーカー -->
+  <section id="poker-screen" class="screen">
+    <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
+    <div class="top-info"><div>WALLET: $<span id="poker-balance">500</span></div><div class="bet-display">BET: $<span id="poker-bet-total">0</span></div></div>
+
+    <div class="area-layout">
+      <div style="text-align: center;">
+        <div style="font-weight: bold; margin-bottom: 5px;">DEALER HAND</div>
+        <div id="poker-dealer-cards" class="card-slots"></div>
+      </div>
+      <div id="poker-status" class="status-msg">勝敗予想を選択し、ベットしてください</div>
+      <div style="text-align: center;">
+        <div id="poker-player-cards" class="card-slots"></div>
+        <div style="font-weight: bold; margin-top: 5px;">PLAYER HAND (交換可能回数: <span id="poker-change-left">2</span>)</div>
+      </div>
+    </div>
+
+    <div class="chip-rack" id="poker-chips">
+      <div class="chip chip-10 selected" onclick="selectChip(10, this)">10</div>
+      <div class="chip chip-50" onclick="selectChip(50, this)">50</div>
+      <div class="chip chip-100" onclick="selectChip(100, this)">100</div>
+      <div class="chip chip-500" onclick="selectChip(500, this)">500</div>
+    </div>
+
+    <div class="controls">
+      <button id="poker-btn-pwin" class="btn btn-primary" onclick="setPokerPrediction('PLAYER_WIN')">PLAYER WIN (2倍)</button>
+      <button id="poker-btn-dwin" class="btn btn-danger" onclick="setPokerPrediction('DEALER_WIN')">DEALER WIN (2倍)</button>
+      <button id="poker-btn-draw" class="btn btn-blue" onclick="setPokerPrediction('DRAW')">DRAW (5倍)</button>
+      <button id="poker-btn-deal" class="btn btn-primary" onclick="pokerStart()" disabled>ディール</button>
+      <button id="poker-btn-exchange" class="btn btn-blue" onclick="pokerExchange()" disabled>選択カードを交換</button>
+      <button id="poker-btn-showdown" class="btn btn-primary" onclick="pokerShowdown()" disabled>勝負 (ショウダウン)</button>
+      <button id="poker-btn-clear" class="btn" onclick="pokerClearBet()">クリア</button>
+    </div>
+  </section>
+
+  <!-- ④ BLACKJACK -->
   <section id="bj-screen" class="screen">
     <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
-    <div class="top-info"><div>WALLET: $<span id="bj-balance">1000</span></div><div class="bet-display">BET: $<span id="bj-bet-total">0</span></div></div>
+    <div class="top-info"><div>WALLET: $<span id="bj-balance">500</span></div><div class="bet-display">BET: $<span id="bj-bet-total">0</span></div></div>
     
     <div class="area-layout">
       <div style="text-align: center;">
@@ -280,10 +349,10 @@
     </div>
   </section>
 
-  <!-- ③ INDIAN POKER -->
+  <!-- ⑤ INDIAN POKER -->
   <section id="indian-screen" class="screen">
     <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
-    <div class="top-info"><div>WALLET: $<span id="indian-balance">1000</span></div><div class="bet-display">POT: $<span id="indian-pot">0</span></div></div>
+    <div class="top-info"><div>WALLET: $<span id="indian-balance">500</span></div><div class="bet-display">POT: $<span id="indian-pot">0</span></div></div>
     
     <div class="area-layout" style="flex-direction: row; justify-content: space-around; align-items: center;">
       <div style="display: flex; flex-direction: column; align-items: center;">
@@ -308,10 +377,10 @@
     </div>
   </section>
 
-  <!-- ④ SIC BO -->
+  <!-- ⑥ SIC BO -->
   <section id="sicbo-screen" class="screen">
     <button class="exit-btn cinema-text" onclick="switchScreen('lobby-screen')">LOBBY</button>
-    <div class="top-info"><div>WALLET: $<span id="sicbo-balance">1000</span></div><div class="bet-display">TOTAL BET: $<span id="sicbo-total-bet">0</span></div></div>
+    <div class="top-info"><div>WALLET: $<span id="sicbo-balance">500</span></div><div class="bet-display">TOTAL BET: $<span id="sicbo-total-bet">0</span></div></div>
 
     <div class="dice-container">
       <div id="sd-1" class="real-dice face-1"><div class="dice-dot top-left"></div><div class="dice-dot top-right"></div><div class="dice-dot mid-left"></div><div class="dice-dot center"></div><div class="dice-dot mid-right"></div><div class="dice-dot bottom-left"></div><div class="dice-dot bottom-right"></div></div>
@@ -371,7 +440,7 @@
   </section>
 
   <script>
-    let balance = 1000;
+    let balance = 500; // 初期資金を500に変更
     let currentSelectedChip = 10;
     const suits = ['♠', '♥', '♦', '♣'];
     const suitRank = { '♠': 4, '♥': 3, '♦': 2, '♣': 1 };
@@ -385,20 +454,33 @@
     }
 
     function updateAllBalances() {
-      ['lobby', 'bj', 'indian', 'sicbo'].forEach(id => {
+      ['lobby', 'babanuki', 'poker', 'bj', 'indian', 'sicbo'].forEach(id => {
         const el = document.getElementById(`${id}-balance`);
         if(el) el.innerText = balance;
       });
     }
 
-    // --- リアル・トランプ生成エンジン（絵札を伝統仕様に全面改修） ---
-    function createRealCard(card, isHidden = false) {
+    // --- リアル・トランプ生成エンジン ---
+    function createRealCard(card, isHidden = false, onClickHandler = null) {
       const el = document.createElement('div');
       el.className = 'card';
+      if (onClickHandler) {
+        el.classList.add('selectable');
+        el.onclick = () => onClickHandler(el);
+      }
       if (isHidden) { el.classList.add('back'); return el; }
+
+      if (card.isJoker) {
+        el.classList.add('joker');
+        const indexTop = `<div class="index-container top-left"><div>J</div><div class="index-suit">🃏</div></div>`;
+        const indexBottom = `<div class="index-container bottom-right"><div>J</div><div class="index-suit">🃏</div></div>`;
+        const centerHTML = `<div class="card-center"><div class="ace-center">🃏</div></div>`;
+        el.innerHTML = `${indexTop}${centerHTML}${indexBottom}`;
+        return el;
+      }
+
       if (card.suit === '♥' || card.suit === '♦') el.classList.add('red');
 
-      // インデックス（四隅の表記）
       const indexTop = `<div class="index-container top-left"><div>${card.label}</div><div class="index-suit">${card.suit}</div></div>`;
       const indexBottom = `<div class="index-container bottom-right"><div>${card.label}</div><div class="index-suit">${card.suit}</div></div>`;
 
@@ -408,21 +490,18 @@
       if (card.label === 'A') {
         centerHTML += `<div class="ace-center">${card.suit}</div>`;
       } else if (['J', 'Q', 'K'].includes(card.label)) {
-        // --- 【新ロジック】伝統的なトランプ絵札（ダブルヘッド）をシミュレート ---
-        let avatarIcon = '🤵'; // デフォルト
-        if (card.label === 'J') avatarIcon = '🔱'; // 兵士・槍
-        if (card.label === 'Q') avatarIcon = '🌹'; // 女王・花
-        if (card.label === 'K') avatarIcon = '⚔️'; // 国王・剣
+        let avatarIcon = '🤵';
+        if (card.label === 'J') avatarIcon = '🔱';
+        if (card.label === 'Q') avatarIcon = '🌹';
+        if (card.label === 'K') avatarIcon = '⚔️';
 
         centerHTML += `
           <div class="court-card-box">
             <div class="court-side-border left"></div>
-            <!-- 上半分 -->
             <div class="court-half top">
               <div class="court-bg-suit">${card.suit}</div>
               <div class="court-avatar">${avatarIcon}</div>
             </div>
-            <!-- 下半分（上下対称） -->
             <div class="court-half bottom">
               <div class="court-bg-suit">${card.suit}</div>
               <div class="court-avatar">${avatarIcon}</div>
@@ -431,55 +510,16 @@
           </div>
         `;
       } else {
-        // 数札（2〜10）の位置指定用
         let positions = [];
-        if (num === 2) {
-          positions = [{t:20, l:50}, {t:80, l:50, inv:true}];
-        } else if (num === 3) {
-          positions = [{t:20, l:50}, {t:50, l:50}, {t:80, l:50, inv:true}];
-        } else if (num === 4) {
-          positions = [{t:20, l:25}, {t:20, l:75}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
-        } else if (num === 5) {
-          positions = [{t:20, l:25}, {t:20, l:75}, {t:50, l:50}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
-        } else if (num === 6) {
-          positions = [
-            {t:20, l:25}, {t:20, l:75},
-            {t:50, l:25}, {t:50, l:75},
-            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
-          ];
-        } else if (num === 7) {
-          positions = [
-            {t:20, l:25}, {t:20, l:75},
-            {t:35, l:50},
-            {t:50, l:25}, {t:50, l:75},
-            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
-          ];
-        } else if (num === 8) {
-          positions = [
-            {t:20, l:25}, {t:20, l:75},
-            {t:35, l:50},
-            {t:50, l:25}, {t:50, l:75},
-            {t:65, l:50, inv:true},
-            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
-          ];
-        } else if (num === 9) {
-          positions = [
-            {t:20, l:25}, {t:20, l:75},
-            {t:40, l:25}, {t:40, l:75},
-            {t:50, l:50},
-            {t:60, l:25, inv:true}, {t:60, l:75, inv:true},
-            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
-          ];
-        } else if (num === 10) {
-          positions = [
-            {t:20, l:25}, {t:20, l:75},
-            {t:32, l:50},
-            {t:44, l:25}, {t:44, l:75},
-            {t:56, l:25, inv:true}, {t:56, l:75, inv:true},
-            {t:68, l:50, inv:true},
-            {t:80, l:25, inv:true}, {t:80, l:75, inv:true}
-          ];
-        }
+        if (num === 2) positions = [{t:20, l:50}, {t:80, l:50, inv:true}];
+        else if (num === 3) positions = [{t:20, l:50}, {t:50, l:50}, {t:80, l:50, inv:true}];
+        else if (num === 4) positions = [{t:20, l:25}, {t:20, l:75}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        else if (num === 5) positions = [{t:20, l:25}, {t:20, l:75}, {t:50, l:50}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        else if (num === 6) positions = [{t:20, l:25}, {t:20, l:75}, {t:50, l:25}, {t:50, l:75}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        else if (num === 7) positions = [{t:20, l:25}, {t:20, l:75}, {t:35, l:50}, {t:50, l:25}, {t:50, l:75}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        else if (num === 8) positions = [{t:20, l:25}, {t:20, l:75}, {t:35, l:50}, {t:50, l:25}, {t:50, l:75}, {t:65, l:50, inv:true}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        else if (num === 9) positions = [{t:20, l:25}, {t:20, l:75}, {t:40, l:25}, {t:40, l:75}, {t:50, l:50}, {t:60, l:25, inv:true}, {t:60, l:75, inv:true}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
+        else if (num === 10) positions = [{t:20, l:25}, {t:20, l:75}, {t:32, l:50}, {t:44, l:25}, {t:44, l:75}, {t:56, l:25, inv:true}, {t:56, l:75, inv:true}, {t:68, l:50, inv:true}, {t:80, l:25, inv:true}, {t:80, l:75, inv:true}];
 
         positions.forEach(pos => {
           const invClass = pos.inv ? 'inv' : '';
@@ -492,13 +532,16 @@
       return el;
     }
 
-    function generateShuffledDeck() {
+    function generateShuffledDeck(includeJoker = false) {
       let deck = [];
       const labels = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
       for (let suit of suits) {
         for (let i = 0; i < labels.length; i++) {
-          deck.push({ suit, label: labels[i], rawValue: i + 1 });
+          deck.push({ suit, label: labels[i], rawValue: i + 1, isJoker: false });
         }
+      }
+      if(includeJoker) {
+        deck.push({ suit: '🃏', label: 'JOKER', rawValue: 0, isJoker: true });
       }
       return deck.sort(() => Math.random() - 0.5);
     }
@@ -512,6 +555,406 @@
     function setDiceFace(elementId, value) {
       const el = document.getElementById(elementId);
       el.className = `real-dice face-${value}`;
+    }
+
+    // ==========================================
+    // ① BET ババ抜き（最終局面） LOGIC
+    // ==========================================
+    let babaBet = 0;
+    let babaPrediction = null;
+    let babaPlayerHand = [];
+    let babaDealerHand = [];
+
+    function initBabanuki() {
+      babaBet = 0; babaPrediction = null;
+      document.getElementById('babanuki-player-cards').innerHTML = '';
+      document.getElementById('babanuki-dealer-cards').innerHTML = '';
+      document.getElementById('babanuki-bet-total').innerText = '0';
+      document.getElementById('babanuki-status').innerText = '予想を選択し、ベットを行ってください';
+      setBabanukiBtns(true, true, false, true);
+    }
+
+    function setBabanukiBtns(win, lose, deal, clear) {
+      document.getElementById('baba-btn-win').disabled = !win;
+      document.getElementById('baba-btn-lose').disabled = !lose;
+      document.getElementById('baba-btn-deal').disabled = !deal;
+      document.getElementById('baba-btn-clear').disabled = !clear;
+    }
+
+    function setBabanukiPrediction(pred) {
+      if(balance < currentSelectedChip) return alert("資金が足りません");
+      babaPrediction = pred;
+      babaBet += currentSelectedChip;
+      balance -= currentSelectedChip;
+      document.getElementById('babanuki-bet-total').innerText = babaBet;
+      updateAllBalances();
+      document.getElementById('babanuki-status').innerText = `予想: ${pred === 'WIN' ? 'WIN (2倍)' : 'LOSE (3倍)'} に $${babaBet} ベット中。ディールできます。`;
+      setBabanukiBtns(true, true, true, true);
+    }
+
+    function babanukiClearBet() {
+      balance += babaBet; babaBet = 0; babaPrediction = null;
+      document.getElementById('babanuki-bet-total').innerText = '0';
+      updateAllBalances();
+      document.getElementById('babanuki-status').innerText = '予想を選択してください';
+      setBabanukiBtns(true, true, false, true);
+    }
+
+    function babanukiStart() {
+      setBabanukiBtns(false, false, false, false);
+
+      babaPlayerHand = [
+        { suit: '🃏', label: 'JOKER', rawValue: 0, isJoker: true },
+        { suit: '♠', label: 'A', rawValue: 1, isJoker: false }
+      ].sort(() => Math.random() - 0.5);
+
+      babaDealerHand = [
+        { suit: '♥', label: 'A', rawValue: 1, isJoker: false }
+      ];
+
+      renderBabanukiView(false, false);
+      
+      // ディーラーのターンから開始する
+      document.getElementById('babanuki-status').innerText = 'ディーラーのターン：ディーラーがあなたの手札から1枚引きます…';
+      setTimeout(babanukiDealerTurn, 1200);
+    }
+
+    function renderBabanukiView(showAll = false, canSelectDealerCard = false) {
+      const pArea = document.getElementById('babanuki-player-cards');
+      const dArea = document.getElementById('babanuki-dealer-cards');
+      pArea.innerHTML = ''; dArea.innerHTML = '';
+
+      babaPlayerHand.forEach(c => pArea.appendChild(createRealCard(c)));
+      babaDealerHand.forEach((c, idx) => {
+        if(showAll) {
+          dArea.appendChild(createRealCard(c));
+        } else if(canSelectDealerCard) {
+          dArea.appendChild(createRealCard(c, true, () => babanukiPlayerSelectCard(idx)));
+        } else {
+          dArea.appendChild(createRealCard(c, true));
+        }
+      });
+    }
+
+    function babanukiPlayerSelectCard(cardIdx) {
+      if(babaDealerHand.length === 0) return;
+      
+      const drawnCard = babaDealerHand.splice(cardIdx, 1)[0];
+      babaPlayerHand.push(drawnCard);
+      renderBabanukiView(false, false);
+
+      setTimeout(() => {
+        checkAndDiscardPairs(babaPlayerHand);
+        renderBabanukiView(false, false);
+
+        if(babaPlayerHand.length === 0) {
+          babanukiEndGame('PLAYER');
+          return;
+        }
+
+        document.getElementById('babanuki-status').innerText = 'ディーラーのターン：ディーラーがあなたの手札から引きにきます…';
+        setTimeout(babanukiDealerTurn, 1200);
+      }, 500);
+    }
+
+    function babanukiDealerTurn() {
+      if(babaPlayerHand.length === 0) { babanukiEndGame('PLAYER'); return; }
+      
+      const randIdx = Math.floor(Math.random() * babaPlayerHand.length);
+      const drawnCard = babaPlayerHand.splice(randIdx, 1)[0];
+      babaDealerHand.push(drawnCard);
+
+      checkAndDiscardPairs(babaDealerHand);
+      renderBabanukiView(false, false);
+
+      if(babaDealerHand.length === 0) {
+        babanukiEndGame('DEALER');
+      } else {
+        document.getElementById('babanuki-status').innerText = 'あなたのターン：ディーラーの手札をタップして1枚引いてください！';
+        renderBabanukiView(false, true); // プレイヤー選択可能状態にする
+      }
+    }
+
+    function checkAndDiscardPairs(hand) {
+      if(hand.length < 2) return;
+      for(let i=0; i<hand.length; i++) {
+        for(let j=i+1; j<hand.length; j++) {
+          if(!hand[i].isJoker && !hand[j].isJoker && hand[i].label === hand[j].label) {
+            hand.splice(j, 1);
+            hand.splice(i, 1);
+            return;
+          }
+        }
+      }
+    }
+
+    function babanukiEndGame(winner) {
+      renderBabanukiView(true, false);
+      const isPlayerWin = (winner === 'PLAYER');
+      let isSuccess = false;
+      let payout = 0;
+
+      if(babaPrediction === 'WIN' && isPlayerWin) {
+        isSuccess = true; payout = babaBet * 2;
+      } else if(babaPrediction === 'LOSE' && !isPlayerWin) {
+        isSuccess = true; payout = babaBet * 3;
+      }
+
+      if(isSuccess) {
+        balance += payout;
+        document.getElementById('babanuki-status').innerText = `勝者: ${winner}! 🎯 予想的中！ $${payout} 獲得！`;
+      } else {
+        document.getElementById('babanuki-status').innerText = `勝者: ${winner}! ❌ 予想不的中…`;
+      }
+
+      babaBet = 0; babaPrediction = null;
+      updateAllBalances();
+      setBabanukiBtns(true, true, false, true);
+    }
+
+    // ==========================================
+    // ③ BET ポーカー LOGIC
+    // ==========================================
+    let pokerBet = 0;
+    let pokerPrediction = null;
+    let pokerDeck = [];
+    let pokerPlayerHand = [];
+    let pokerDealerHand = [];
+    let pokerChangeLeft = 2;
+    let pokerSelectedIndices = [];
+
+    function initPoker() {
+      pokerBet = 0; pokerPrediction = null; pokerSelectedIndices = [];
+      document.getElementById('poker-player-cards').innerHTML = '';
+      document.getElementById('poker-dealer-cards').innerHTML = '';
+      document.getElementById('poker-bet-total').innerText = '0';
+      document.getElementById('poker-change-left').innerText = '2';
+      document.getElementById('poker-status').innerText = '勝敗予想を選択し、ベットしてください';
+      setPokerBtns(true, true, true, false, false, false, true);
+    }
+
+    function setPokerBtns(pwin, dwin, draw, deal, exch, show, clear) {
+      document.getElementById('poker-btn-pwin').disabled = !pwin;
+      document.getElementById('poker-btn-dwin').disabled = !dwin;
+      document.getElementById('poker-btn-draw').disabled = !draw;
+      document.getElementById('poker-btn-deal').disabled = !deal;
+      document.getElementById('poker-btn-exchange').disabled = !exch;
+      document.getElementById('poker-btn-showdown').disabled = !show;
+      document.getElementById('poker-btn-clear').disabled = !clear;
+    }
+
+    function setPokerPrediction(pred) {
+      if(balance < currentSelectedChip) return alert("資金が足りません");
+      pokerPrediction = pred;
+      pokerBet += currentSelectedChip;
+      balance -= currentSelectedChip;
+      document.getElementById('poker-bet-total').innerText = pokerBet;
+      updateAllBalances();
+      let label = pred === 'PLAYER_WIN' ? 'PLAYER WIN (2倍)' : (pred === 'DEALER_WIN' ? 'DEALER WIN (2倍)' : 'DRAW (5倍)');
+      document.getElementById('poker-status').innerText = `予想: ${label} に $${pokerBet} ベット中。ディールできます。`;
+      setPokerBtns(true, true, true, true, false, false, true);
+    }
+
+    function pokerClearBet() {
+      balance += pokerBet; pokerBet = 0; pokerPrediction = null;
+      document.getElementById('poker-bet-total').innerText = '0';
+      updateAllBalances();
+      document.getElementById('poker-status').innerText = '勝敗予想を選択してください';
+      setPokerBtns(true, true, true, false, false, false, true);
+    }
+
+    function pokerStart() {
+      pokerDeck = generateShuffledDeck(false);
+      pokerPlayerHand = [pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop()];
+      pokerDealerHand = [pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop()];
+      pokerChangeLeft = 2; pokerSelectedIndices = [];
+      document.getElementById('poker-change-left').innerText = pokerChangeLeft;
+
+      renderPokerView(false);
+      document.getElementById('poker-status').innerText = '交換したいカードをタップして「カード交換」を押すか、そのまま「勝負」してください';
+      setPokerBtns(false, false, false, false, true, true, false);
+    }
+
+    function renderPokerView(showDealer = false) {
+      const pArea = document.getElementById('poker-player-cards');
+      const dArea = document.getElementById('poker-dealer-cards');
+      pArea.innerHTML = ''; dArea.innerHTML = '';
+
+      pokerPlayerHand.forEach((c, idx) => {
+        const el = createRealCard(c, false, (cardEl) => pokerToggleSelectCard(idx, cardEl));
+        if(pokerSelectedIndices.includes(idx)) el.classList.add('selected-for-exchange');
+        pArea.appendChild(el);
+      });
+
+      pokerDealerHand.forEach(c => dArea.appendChild(createRealCard(c, !showDealer)));
+    }
+
+    function pokerToggleSelectCard(idx, cardEl) {
+      if(pokerChangeLeft <= 0) return;
+      const sIdx = pokerSelectedIndices.indexOf(idx);
+      if(sIdx >= 0) {
+        pokerSelectedIndices.splice(sIdx, 1);
+        cardEl.classList.remove('selected-for-exchange');
+      } else {
+        pokerSelectedIndices.push(idx);
+        cardEl.classList.add('selected-for-exchange');
+      }
+    }
+
+    function pokerExchange() {
+      if(pokerChangeLeft <= 0) return;
+      pokerSelectedIndices.forEach(i => {
+        pokerPlayerHand[i] = pokerDeck.pop();
+      });
+      pokerSelectedIndices = [];
+      pokerChangeLeft--;
+      document.getElementById('poker-change-left').innerText = pokerChangeLeft;
+
+      pokerDealerAIChange();
+
+      renderPokerView(false);
+      if(pokerChangeLeft <= 0) {
+        document.getElementById('poker-btn-exchange').disabled = true;
+        document.getElementById('poker-status').innerText = '交換回数が尽きました。「勝負」を押してください';
+      } else {
+        document.getElementById('poker-status').innerText = `カードを交換しました。(残り交換回数: ${pokerChangeLeft})`;
+      }
+    }
+
+    function pokerDealerAIChange() {
+      let evalResult = evaluatePokerHand(pokerDealerHand);
+      let hand = pokerDealerHand;
+      let ranks = evalResult.ranks;
+      let counts = evalResult.counts;
+
+      // 交換するカードのインデックスを保持する配列
+      let discardIndices = [];
+
+      // 1. スリーカード / フォーカード の場合：キッカー（役に絡まないカード）を交換してフルハウスや強化を狙う
+      if (evalResult.rank === 4 || evalResult.rank === 8) {
+        let tripRank = Number(Object.keys(counts).find(key => counts[key] >= 3));
+        hand.forEach((c, i) => {
+          let r = c.rawValue === 1 ? 14 : c.rawValue;
+          if (r !== tripRank) discardIndices.push(i);
+        });
+      }
+      // 2. ツーペア の場合：残り1枚のキッカーを交換してフルハウスを狙う
+      else if (evalResult.rank === 3) {
+        hand.forEach((c, i) => {
+          let r = c.rawValue === 1 ? 14 : c.rawValue;
+          if (counts[r] === 1) discardIndices.push(i);
+        });
+      }
+      // 3. ワンペア の場合：ペアを残し、残りの3枚を交換してスリーカード/フルハウス等を狙う
+      else if (evalResult.rank === 2) {
+        let pairRank = Number(Object.keys(counts).find(key => counts[key] === 2));
+        hand.forEach((c, i) => {
+          let r = c.rawValue === 1 ? 14 : c.rawValue;
+          if (r !== pairRank) discardIndices.push(i);
+        });
+      }
+      // 4. ノーペア（ハイカード）の場合：ドローの狙い目を確認
+      else {
+        // 4-a. フラッシュの4枚リーチ（あと1枚で同スート）があるかチェック
+        let suitCounts = {};
+        hand.forEach(c => suitCounts[c.suit] = (suitCounts[c.suit] || 0) + 1);
+        let flushSuit = Object.keys(suitCounts).find(s => suitCounts[s] === 4);
+
+        if (flushSuit) {
+          // 揃っていない1枚だけを交換
+          hand.forEach((c, i) => {
+            if (c.suit !== flushSuit) discardIndices.push(i);
+          });
+        } else {
+          // 4-b. ハイカード（A, K, Q, J）を残し、それ以外（10以下）をすべて交換
+          // ハイカードが無い場合は、最も強いカード1枚を残して残り4枚を交換
+          let highCardKeepIdx = -1;
+          let maxRank = 0;
+
+          hand.forEach((c, i) => {
+            let r = c.rawValue === 1 ? 14 : c.rawValue;
+            if (r >= 11) {
+              // A, K, Q, J は残す
+            } else {
+              discardIndices.push(i);
+            }
+            if (r > maxRank) {
+              maxRank = r;
+              highCardKeepIdx = i;
+            }
+          });
+
+          // もし5枚とも10以下で全部捨てることになった場合、一番強いカードだけ手元に残す
+          if (discardIndices.length === 5) {
+            discardIndices = discardIndices.filter(i => i !== highCardKeepIdx);
+          }
+        }
+      }
+
+      // 決定したインデックスのカードをデッキから引き直す
+      discardIndices.forEach(idx => {
+        pokerDealerHand[idx] = pokerDeck.pop();
+      });
+    }
+
+    function evaluatePokerHand(hand) {
+      let ranks = hand.map(c => c.rawValue === 1 ? 14 : c.rawValue).sort((a,b) => a - b);
+      let suitsArr = hand.map(c => c.suit);
+      let isFlush = suitsArr.every(s => s === suitsArr[0]);
+      let isStraight = (ranks[4] - ranks[0] === 4 && new Set(ranks).size === 5) || 
+                         (ranks[0]===2 && ranks[1]===3 && ranks[2]===4 && ranks[3]===5 && ranks[4]===14);
+
+      let counts = {};
+      ranks.forEach(r => counts[r] = (counts[r] || 0) + 1);
+      let countValues = Object.values(counts).sort((a,b) => b - a);
+
+      let rank = 1;
+      let name = "ハイカード";
+
+      if(isStraight && isFlush) { rank = 9; name = "ストレートフラッシュ"; }
+      else if(countValues[0] === 4) { rank = 8; name = "フォーカード"; }
+      else if(countValues[0] === 3 && countValues[1] === 2) { rank = 7; name = "フルハウス"; }
+      else if(isFlush) { rank = 6; name = "フラッシュ"; }
+      else if(isStraight) { rank = 5; name = "ストレート"; }
+      else if(countValues[0] === 3) { rank = 4; name = "スリーカード"; }
+      else if(countValues[0] === 2 && countValues[1] === 2) { rank = 3; name = "ツーペア"; }
+      else if(countValues[0] === 2) { rank = 2; name = "ワンペア"; }
+
+      return { rank, name, ranks, counts };
+    }
+
+    function comparePokerHands(pHand, dHand) {
+      let pEval = evaluatePokerHand(pHand);
+      let dEval = evaluatePokerHand(dHand);
+
+      if(pEval.rank > dEval.rank) return { winner: 'PLAYER_WIN', pEval, dEval };
+      if(pEval.rank < dEval.rank) return { winner: 'DEALER_WIN', pEval, dEval };
+
+      for(let i=4; i>=0; i--) {
+        if(pEval.ranks[i] > dEval.ranks[i]) return { winner: 'PLAYER_WIN', pEval, dEval };
+        if(pEval.ranks[i] < dEval.ranks[i]) return { winner: 'DEALER_WIN', pEval, dEval };
+      }
+      return { winner: 'DRAW', pEval, dEval };
+    }
+
+    function pokerShowdown() {
+      renderPokerView(true);
+      let res = comparePokerHands(pokerPlayerHand, pokerDealerHand);
+      let isSuccess = (pokerPrediction === res.winner);
+      let payoutFactor = 0;
+
+      if(isSuccess) {
+        payoutFactor = (pokerPrediction === 'DRAW') ? 5 : 2;
+        let winAmt = pokerBet * payoutFactor;
+        balance += winAmt;
+        document.getElementById('poker-status').innerText = `【結果】あなた:${res.pEval.name} vs 相手:${res.dEval.name} 🎯 予想的中！ $${winAmt}獲得！`;
+      } else {
+        document.getElementById('poker-status').innerText = `【結果】あなた:${res.pEval.name} vs 相手:${res.dEval.name} ❌ 予想不的中…`;
+      }
+
+      pokerBet = 0; pokerPrediction = null;
+      updateAllBalances();
+      setPokerBtns(true, true, true, false, false, false, true);
     }
 
     // --- BLACKJACK LOGIC ---
